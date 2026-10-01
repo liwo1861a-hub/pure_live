@@ -1,4 +1,4 @@
-name: lzvideo Build (Android APK)
+name: PureLive Android Build & Release
 
 on:
   workflow_dispatch:
@@ -15,7 +15,8 @@ jobs:
   android:
     name: Build Android APK
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,27 +24,26 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: '21'
+          distribution: zulu
+          java-version: '17'
           cache: gradle
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.47.0'
+          flutter-version: '3.29.0'
           cache: true
 
-      - name: Configure Android signing
+      - name: Configure Android Fixed Signing Key
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p android
-          keytool -genkey -v -keystore "$RUNNER_TEMP/pure-live-release.jks" \
-            -keyalg RSA -keysize 2048 -validity 10000 -alias purelive \
-            -dname "CN=PureLive, OU=PureLive, O=PureLive, L=Unknown, S=Unknown, C=CN" \
-            -storepass purelive123 -keypass purelive123
+          mkdir -p android/app
+          
+          # 永久固化Release签名证书（基准指纹 1dc44b03c51689ffdcbcf803c1da830cdd8f6bf7febaa688b9ddfe3bb9595e35）
+          echo "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" | base64 -d > android/app/purelive-release.jks
 
-          echo "storeFile=$RUNNER_TEMP/pure-live-release.jks" > android/key.properties
+          echo "storeFile=purelive-release.jks" > android/key.properties
           echo "storePassword=purelive123" >> android/key.properties
           echo "keyPassword=purelive123" >> android/key.properties
           echo "keyAlias=purelive" >> android/key.properties
@@ -51,62 +51,77 @@ jobs:
       - name: Resolve packages
         run: flutter pub get
 
-      - name: Generate production AppConfig
-        run: |
-          dart run enven \
-            --env-files .env,.env.prod \
-            --class-name AppConfig
-
-      - name: Build Android release APK
+      - name: Build Android release APK (Split ABI)
         run: |
           flutter build apk \
             --release \
             --split-per-abi
+
+      - name: Strict 1:1 Signature Verification Gatekeeper
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_CLEAN="1dc44b03c51689ffdcbcf803c1da830cdd8f6bf7febaa688b9ddfe3bb9595e35"
+          APK_FILE="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
+          
+          echo "========================================================"
+          echo "Verifying APK release signature for: $APK_FILE"
+          echo "========================================================"
+          CERT_OUTPUT=$(keytool -printcert -jarfile "$APK_FILE" 2>&1 || true)
+          echo "$CERT_OUTPUT"
+          
+          ACTUAL_SHA256=$(echo "$CERT_OUTPUT" | grep -i "SHA256:" | head -n1 | sed -e 's/.*SHA256: *//' -e 's/ *//g' -e 's/://g' | tr '[:upper:]' '[:lower:]')
+          echo "Extracted SHA256 (clean): $ACTUAL_SHA256"
+          echo "Expected SHA256 (clean):  $EXPECTED_CLEAN"
+          
+          if [ "$ACTUAL_SHA256" != "$EXPECTED_CLEAN" ]; then
+            echo "FATAL: APK release signature fingerprint mismatch! Build aborted to protect user in-place upgrade."
+            echo "Expected: $EXPECTED_CLEAN"
+            echo "Actual:   $ACTUAL_SHA256"
+            exit 1
+          fi
+          echo "SUCCESS: 1:1 Fixed Signature Gatekeeper passed with 100% precision!"
 
       - name: Get version
         id: version
         shell: bash
         run: |
           set -euo pipefail
-          FULL_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //; s/[`"'"'"']//g')
-          echo "version=${FULL_VERSION%%+*}" >> "$GITHUB_OUTPUT"
-          echo "artifact_version=${FULL_VERSION/+/-}" >> "$GITHUB_OUTPUT"
+          FULL_VERSION=$(grep '^version:' pubspec.yaml | head -n1 | sed -e 's/version: //' -e 's/+.*//' -e 's/["'\'']//g')
+          echo "version=${FULL_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=v${FULL_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Collect APKs
         shell: bash
         run: |
           set -euo pipefail
-          VERSION="${{ steps.version.outputs.artifact_version }}"
+          VERSION="${{ steps.version.outputs.version }}"
           APK_DIR="build/app/outputs/flutter-apk"
           mkdir -p dist_android
-          # lzvideo names
-          cp "$APK_DIR/app-arm64-v8a-release.apk" "dist_android/lzvideo-${VERSION}-android-arm64-v8a-release.apk" || true
-          cp "$APK_DIR/app-armeabi-v7a-release.apk" "dist_android/lzvideo-${VERSION}-android-armeabi-v7a-release.apk" || true
-          cp "$APK_DIR/app-x86_64-release.apk" "dist_android/lzvideo-${VERSION}-android-x86_64-release.apk" || true
-          # PureLive compatibility aliases for legacy clients
-          cp "$APK_DIR/app-arm64-v8a-release.apk" "dist_android/PureLive-${VERSION}-android-arm64-v8a-release.apk" || true
-          cp "$APK_DIR/app-armeabi-v7a-release.apk" "dist_android/PureLive-${VERSION}-android-armeabi-v7a-release.apk" || true
-          cp "$APK_DIR/app-x86_64-release.apk" "dist_android/PureLive-${VERSION}-android-x86_64-release.apk" || true
+          cp "$APK_DIR/app-arm64-v8a-release.apk" "dist_android/PureLive-${VERSION}-android-arm64-v8a.apk" || true
+          cp "$APK_DIR/app-armeabi-v7a-release.apk" "dist_android/PureLive-${VERSION}-android-armeabi-v7a.apk" || true
+          cp "$APK_DIR/app-x86_64-release.apk" "dist_android/PureLive-${VERSION}-android-x86_64.apk" || true
           ls -lh dist_android/
 
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: lzvideo-Android-APKs
-          path: dist_android/
+          name: PureLive-Android-APKs
+          path: dist_android/*.apk
           retention-days: 14
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master'
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: lzvideo v${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          name: "PureLive v${{ steps.version.outputs.version }}"
           body: |
-            ## lzvideo v${{ steps.version.outputs.version }}
-            - 修复直播间偶发黑屏问题
-            - 新增主播下播自动停止录制并保存
-            - 仅保留专属 arm64 架构与 GitHub 官方唯一下载直链
+            ## PureLive v${{ steps.version.outputs.version }}
+            - 自动构建发布 Android 版本
+            - 🔒 严格强制固化 Release 签名门禁 (SHA256: 1dc44b03c51689ffdcbcf803c1da830cdd8f6bf7febaa688b9ddfe3bb9595e35)
+            - 保证全生命周期无缝覆盖升级安装，彻底杜绝签名不一致
+            - 包含 arm64-v8a / armeabi-v7a / x86_64 三大架构分包
           files: |
             dist_android/*.apk
           draft: false
