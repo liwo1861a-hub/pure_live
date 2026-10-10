@@ -154,6 +154,8 @@ final class LivePlayerFacade {
 
     final urls = <String>[sourceUrl, ...playUrls.where((value) => value != sourceUrl)];
     _room = liveroom;
+    // 切换新直播间时重置竖屏状态，避免继承上一个竖屏房间的残留导致全屏误旋转为竖屏
+    isVerticalVideo.value = false;
     _lastHeaders = Map<String, String>.unmodifiable(headers);
     _lastLines = List<String>.unmodifiable(urls);
 

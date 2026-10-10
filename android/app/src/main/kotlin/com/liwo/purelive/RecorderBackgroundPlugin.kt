@@ -1,4 +1,4 @@
-package com.mystyle.purelive
+﻿package com.liwo.purelive
 
 import android.content.ComponentName
 import android.content.Context
@@ -555,3 +555,4 @@ private fun sanitize(message: String): String = message
     .trim()
     .ifEmpty { "Recorder background support failed" }
     .take(240)
+

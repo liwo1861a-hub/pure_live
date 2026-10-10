@@ -1406,7 +1406,8 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
         await exitFullScreen();
       } else {
         _livePlayController.setFullScreen();
-        await enterFullScreen();
+        // 关键修复：常规模式点击右下角放大全屏按钮，强制旋转为横屏全屏，杜绝放大成竖屏
+        await enterFullScreen(forceLandscape: true);
       }
       enableController();
     } finally {

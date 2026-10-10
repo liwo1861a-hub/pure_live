@@ -1,4 +1,4 @@
-package com.mystyle.purelive
+﻿package com.liwo.purelive
 
 import android.os.Handler
 import android.os.Looper
@@ -127,3 +127,4 @@ internal class NativeHttpChannel(binaryMessenger: BinaryMessenger) : MethodChann
         return output.toString(Charsets.UTF_8.name())
     }
 }
+

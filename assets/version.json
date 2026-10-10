@@ -1,61 +1,37 @@
 {
-  "version": "3.1.19",
-  "build_number": 4108,
-  "version_num": 301184108,
+  "version": "3.2.0",
+  "build_number": 4120,
+  "version_num": 302004120,
   "android_abis": [
-    "armeabi-v7a",
     "arm64-v8a",
+    "armeabi-v7a",
     "x86_64"
   ],
-  "version_desc": "version: 3.1.19\n版本更新：\n- 修复部分bug",
+  "version_desc": "- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复后台 1 分钟断网暂停 (24 小时长效唤醒与高性能 WiFi 保活)\n- 修复从后台恢复无限卡循环 2 秒 (清空过期 2 秒旧缓存并重新对齐当前最新直播)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名，接入 Cloudflare CDN 极速下载",
   "prerelease": false,
-  "download_url": "https://github.com/liuchuancong/pure_live/releases/tag/v3.1.19",
+  "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0",
   "platforms": {
     "android": {
-      "version": "3.1.19",
-      "build_number": 4108,
-      "version_num": 301184108,
-      "version_desc": "version: 3.1.19\n版本更新：\n- 修复部分bug",
+      "version": "3.2.0",
+      "build_number": 4120,
+      "version_num": 302004120,
+      "version_desc": "- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复后台 1 分钟断网暂停 (24 小时长效唤醒与高性能 WiFi 保活)\n- 修复从后台恢复无限卡循环 2 秒 (清空过期 2 秒旧缓存并重新对齐当前最新直播)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名，接入 Cloudflare CDN 极速下载",
       "prerelease": false,
-      "download_url": "https://github.com/liuchuancong/pure_live/releases/tag/v3.1.19",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0",
       "android_abis": [
-        "armeabi-v7a",
         "arm64-v8a",
+        "armeabi-v7a",
         "x86_64"
       ]
     },
     "windows": {
-      "version": "3.1.19",
-      "build_number": 4108,
-      "version_num": 301184108,
-      "version_desc": "version: 3.1.19\n版本更新：\n- 修复部分bug",
+      "version": "3.2.0",
+      "build_number": 4120,
+      "version_num": 302004120,
+      "version_desc": "- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复后台 1 分钟断网暂停 (24 小时长效唤醒与高性能 WiFi 保活)\n- 修复从后台恢复无限卡循环 2 秒 (清空过期 2 秒旧缓存并重新对齐当前最新直播)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名，接入 Cloudflare CDN 极速下载",
       "prerelease": false,
-      "download_url": "https://github.com/liuchuancong/pure_live/releases/tag/v3.1.19",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0",
       "windows_msix_available": true
-    },
-    "linux": {
-      "version": "3.1.19",
-      "build_number": 4108,
-      "version_num": 301184108,
-      "version_desc": "version: 3.1.19\n版本更新：\n- 修复部分bug",
-      "prerelease": false,
-      "download_url": "https://github.com/liuchuancong/pure_live/releases/tag/v3.1.19"
-    },
-    "macos": {
-      "version": "3.1.19",
-      "build_number": 4108,
-      "version_num": 301184108,
-      "version_desc": "version: 3.1.19\n版本更新：\n- 修复部分bug",
-      "prerelease": false,
-      "download_url": "https://github.com/liuchuancong/pure_live/releases/tag/v3.1.19"
-    },
-    "ios": {
-      "version": "3.1.19",
-      "build_number": 4108,
-      "version_num": 301184108,
-      "version_desc": "version: 3.1.19\n版本更新：\n- 修复部分bug",
-      "prerelease": false,
-      "download_url": "https://github.com/liuchuancong/pure_live/releases/tag/v3.1.19"
     }
   }
 }

@@ -24,19 +24,23 @@ class VersionUtil {
 
   static final String githubUrl = 'https://github.com/$updateOwner';
 
-  static const String email = '17792321552@163.com';
-  static const String emailUrl = 'mailto:17792321552@163.com?subject=PureLive Feedback';
+  static const String email = 'luzi1861a@gmail.com';
+  static const String emailUrl = 'mailto:luzi1861a@gmail.com?subject=PureLive Feedback';
 
-  static const String telegramGroup = 't.me/pure_live_channel';
-  static const String telegramGroupUrl = 'https://t.me/pure_live_channel';
+  static const String telegramGroup = 't.me/lzvideo_channel';
+  static const String telegramGroupUrl = 'https://t.me/lzvideo_channel';
 
-  static final String releaseUrl = 'https://api.github.com/repos/$updateOwner/$updateRepository/releases?per_page=30';
+  static final String releaseUrl = 'https://gh.lz1861.ccwu.cc/https://api.github.com/repos/$updateOwner/$updateRepository/releases?per_page=30';
 
   static final GitHubMirror mirror = GitHubMirror(owner: updateOwner, repo: updateRepository, branch: 'master');
 
-  static List<String> get _versionUrls => SettingsService.to.app.useGitHubOriginForUpdates.v
-      ? [mirror.rawUrl('assets/version.json')]
-      : mirror.mirrors('assets/version.json');
+  static List<String> get _versionUrls => [
+        'https://gh.lz1861.ccwu.cc/api/version',
+        if (SettingsService.to.app.useGitHubOriginForUpdates.v)
+          mirror.rawUrl('assets/version.json')
+        else
+          ...mirror.mirrors('assets/version.json'),
+      ];
 
   final isHasNewVersion = false.obs;
 

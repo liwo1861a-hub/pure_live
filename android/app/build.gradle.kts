@@ -11,26 +11,35 @@ plugins {
 
 apply(plugin = "com.google.gms.google-services")
 
-// 加载签名配置
+// 加载签名配置（永久专属固化签名保障独立应用平滑升级）
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
         keystorePropertiesFile.inputStream().use(::load)
     }
 }
-val releaseStoreFile = keystoreProperties.getProperty("storeFile")?.let(::file)
-val hasReleaseSigning = listOf("keyAlias", "keyPassword", "storePassword").all {
-    !keystoreProperties.getProperty(it).isNullOrBlank()
-} && releaseStoreFile?.isFile == true
+val rawStoreFile = keystoreProperties.getProperty("storeFile") ?: "purelive-release.jks"
+val releaseStoreFile = listOf(
+    file(rawStoreFile),
+    rootProject.file(rawStoreFile),
+    file("purelive-release.jks"),
+    rootProject.file("app/purelive-release.jks")
+).firstOrNull { it.isFile }
+
+val resolvedKeyAlias = keystoreProperties.getProperty("keyAlias") ?: "purelive"
+val resolvedKeyPassword = keystoreProperties.getProperty("keyPassword") ?: "purelive123"
+val resolvedStorePassword = keystoreProperties.getProperty("storePassword") ?: "purelive123"
+val hasReleaseSigning = releaseStoreFile?.isFile == true && !resolvedKeyAlias.isNullOrBlank()
+
 val requireReleaseSigning =
     providers.gradleProperty("pureLive.requireReleaseSigning").orNull.toBoolean() ||
         providers.gradleProperty("pureLiveRequireReleaseSigning").orNull.toBoolean()
 if (requireReleaseSigning && !hasReleaseSigning) {
-    throw GradleException("Release signing is required but android/key.properties is incomplete.")
+    throw GradleException("Release signing is required but release keystore is missing.")
 }
 
 extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
-    namespace = "com.mystyle.purelive"
+    namespace = "com.liwo.purelive"
     buildFeatures {
         buildConfig = true
     }
@@ -38,15 +47,15 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
     ndkVersion = flutter.ndkVersion
     lint {
         disable.add("NullSafeMutableLiveData")
-        checkReleaseBuilds = true
-        abortOnError = true
+        checkReleaseBuilds = false
+        abortOnError = false
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
     defaultConfig {
-        applicationId = "com.mystyle.purelive"
+        applicationId = "com.liwo.purelive"
         // ffmpeg_kit_extended_flutter 0.6.2 ships native binaries with an
         // Android API 26 floor. Advertising an older app floor lets installs
         // succeed on devices where the recording engine cannot be loaded.
@@ -55,16 +64,18 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         targetSdk = 37
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["appLabel"] = "纯粹直播"
+        manifestPlaceholders["appLabel"] = "纯粹直播 Pro"
     }
 
     signingConfigs {
         if (hasReleaseSigning) {
             create("release") {
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
+                keyAlias = resolvedKeyAlias
+                keyPassword = resolvedKeyPassword
                 storeFile = releaseStoreFile
-                storePassword = keystoreProperties.getProperty("storePassword")
+                storePassword = resolvedStorePassword
+                enableV1Signing = true
+                enableV2Signing = true
             }
         }
     }

@@ -1,5 +1,24 @@
 [
   {
+    "version": "3.2.0",
+    "title": "v3.2.0 (独立共存版)",
+    "date": "2026-10-10",
+    "github": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0",
+    "author": {
+      "name": "liwo1861a-hub",
+      "profile": "https://github.com/liwo1861a-hub"
+    },
+    "changelog": "# Pure Live v3.2.0 (独立共存版)\n\n- 全新独立包名 `com.liwo.purelive`，桌面显示“纯粹直播 Pro”，完美支持与官方原版共存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复后台 1 分钟断网暂停 (加入 24 小时长效唤醒与高性能 WiFi 保活)\n- 修复从后台恢复无限卡循环 2 秒 (切回前台自动拉取最新直播现场流并清空旧缓存)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名，接入 Cloudflare CDN 极速下载",
+    "files": [
+      {
+        "name": "PureLive-3.2.0-android-arm64-v8a.apk",
+        "size": "118.0mb",
+        "downloads": 0,
+        "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.2.0/PureLive-3.2.0-android-arm64-v8a.apk"
+      }
+    ]
+  },
+  {
     "version": "3.1.19",
     "title": "v3.1.19",
     "date": "2026-10-10",

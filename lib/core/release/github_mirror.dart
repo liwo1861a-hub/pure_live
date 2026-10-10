@@ -19,6 +19,7 @@ class GitHubMirror {
   }
 
   static const List<String> _rawPrefixes = [
+    'https://gh.lz1861.ccwu.cc/',
     'https://cdn.gh-proxy.org/',
     'https://edgeone.gh-proxy.org/',
     'https://hk.gh-proxy.org/',
@@ -51,5 +52,15 @@ class GitHubMirror {
       jsdelivr(filePath),
       jsdelivrFastly(filePath),
     });
+  }
+
+  static String speedUpUrl(String originalUrl) {
+    final trimmed = originalUrl.trim();
+    if (trimmed.isEmpty) return trimmed;
+    if (trimmed.startsWith('https://gh.lz1861.ccwu.cc/')) return trimmed;
+    if (trimmed.contains('github.com/') || trimmed.contains('githubusercontent.com/')) {
+      return 'https://gh.lz1861.ccwu.cc/$trimmed';
+    }
+    return trimmed;
   }
 }

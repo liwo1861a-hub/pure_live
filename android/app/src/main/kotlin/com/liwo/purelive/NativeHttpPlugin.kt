@@ -1,4 +1,4 @@
-package com.mystyle.purelive
+﻿package com.liwo.purelive
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 
@@ -15,3 +15,4 @@ internal class NativeHttpPlugin : FlutterPlugin {
         channel = null
     }
 }
+

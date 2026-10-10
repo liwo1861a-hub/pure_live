@@ -1,4 +1,4 @@
-package com.mystyle.purelive
+﻿package com.liwo.purelive
 
 import android.content.Context
 import android.graphics.Color
