@@ -24,9 +24,9 @@ export default {
       });
     }
 
-    // 1. 直链通用前缀代理：/https://... 或 /http://...
-    if (pathname.startsWith('/https://') || pathname.startsWith('/http://')) {
-      const target = pathname.substring(1) + url.search;
+    // 1. 直链通用前缀代理：兼容 /https://、/https:/、/http://、/http:/ 以及 URL 编码
+    if (/^\/https?:\/+/i.test(pathname)) {
+      const target = pathname.replace(/^\/+(https?):\/+/i, '$1://') + url.search;
       return handleProxy(request, target);
     }
 
@@ -37,16 +37,18 @@ export default {
       return handleProxy(request, target);
     }
 
-    // 3. /raw/... 代理 raw.githubusercontent.com
-    if (pathname.startsWith('/raw/')) {
-      const rest = pathname.substring(5);
-      const target = `https://raw.githubusercontent.com/${DEFAULT_OWNER}/${DEFAULT_REPO}/master/${rest}`;
-      return handleProxy(request, target);
-    }
-
-    // 4. /releases/download/... 形式代理 (默认仓库)
-    if (pathname.startsWith('/releases/download/')) {
-      const target = `https://github.com/${DEFAULT_OWNER}/${DEFAULT_REPO}${pathname}`;
+    // 3. 包含 releases/download/ 的任意路径直接转接 GitHub Releases
+    if (pathname.includes('/releases/download/')) {
+      let target = pathname;
+      if (!target.startsWith('http')) {
+        if (!target.startsWith('/')) target = '/' + target;
+        // 如果未指定 owner/repo，补齐默认仓库
+        if (target.startsWith('/releases/download/')) {
+          target = `https://github.com/${DEFAULT_OWNER}/${DEFAULT_REPO}${target}${url.search}`;
+        } else {
+          target = `https://github.com${target}${url.search}`;
+        }
+      }
       return handleProxy(request, target);
     }
 
