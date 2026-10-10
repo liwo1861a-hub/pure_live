@@ -62,14 +62,20 @@ class _VideoPlayerState extends State<VideoPlayer> with WidgetsBindingObserver {
           _isPausedByLifecycle = true;
           player.pause();
         }
+      } else {
+        // 后台持续播放：同步触发 Android CPU/WiFi 深度保活锁，杜绝 1 分钟后被系统断网挂起
+        LiveAudioService.syncKeepAlive();
       }
     } else if (state == AppLifecycleState.resumed) {
       if (player.isAudioOnlyMode && !LiveAudioService.isSleepSessionActive) {
         unawaited(player.prepareAudioOnlyVideoRestore());
       }
       if (_isPausedByLifecycle) {
-        player.resume();
         _isPausedByLifecycle = false;
+        // 直播流在后台暂停后切回前台：立即拉取最新实时推流点并清空过期缓冲，杜绝无限卡循环 2 秒
+        player.replay();
+      } else if (LiveAudioService.shouldContinueInBackground) {
+        LiveAudioService.syncKeepAlive();
       }
     }
   }

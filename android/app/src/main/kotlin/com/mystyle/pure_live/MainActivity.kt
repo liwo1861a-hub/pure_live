@@ -549,7 +549,7 @@ class MainActivity : AudioServiceActivity() {
             }
 
             if (playbackWakeLock?.isHeld != true) {
-                playbackWakeLock?.acquire()
+                playbackWakeLock?.acquire(24 * 60 * 60 * 1000L)
             }
 
             if (playbackWifiLock == null) {

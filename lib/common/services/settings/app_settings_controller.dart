@@ -36,7 +36,7 @@ class AppSettingsController extends GetxController {
 
   final RxInt autoRefreshTime = hiveInt('autoRefreshTime', 3);
   final RxBool enableDenseFavorites = hiveBool('enableDenseFavorites', true);
-  final RxBool enableBackgroundPlay = hiveBool('enableBackgroundPlay', false);
+  final RxBool enableBackgroundPlay = hiveBool('enableBackgroundPlay', true);
   final RxBool enableAsmrSleepMode = hiveBool('enableAsmrSleepMode', false);
   final RxInt asmrSleepMinutes = hiveInt('asmrSleepMinutes', 60);
   final RxBool enableRotateScreen = hiveBool('enableRotateScreen', false);

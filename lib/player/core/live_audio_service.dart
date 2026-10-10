@@ -6,6 +6,7 @@ import 'package:pure_live/common/global/platform_utils.dart';
 import 'package:pure_live/player/core/live_audio_handler.dart';
 import 'package:pure_live/player/core/background_playback_policy.dart';
 import 'package:pure_live/player/core/background_playback_service.dart';
+import 'package:pure_live/player/global_player_service.dart';
 import 'package:pure_live/player/interface/unified_player_interface.dart';
 import 'package:pure_live/common/services/settings/app_settings_controller.dart';
 
@@ -123,7 +124,9 @@ class LiveAudioService {
   static Future<void> releaseKeepAlive() => BackgroundPlaybackService.setKeepAlive(false);
 
   static Future<void> syncKeepAlive() {
-    final shouldKeepAlive = (_handler?.playbackState.value.playing ?? false) && shouldContinueInBackground;
+    final isPlaying = (_handler?.playbackState.value.playing ?? false) ||
+        (GlobalPlayerService.instance.player.isPlayingNow);
+    final shouldKeepAlive = isPlaying && shouldContinueInBackground;
     return BackgroundPlaybackService.setKeepAlive(shouldKeepAlive);
   }
 
