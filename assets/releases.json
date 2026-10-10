@@ -3,6 +3,27 @@
     {
       "assets": [
         {
+          "name": "PureLive-3.2.0-4120-android-arm64-v8a-release.apk",
+          "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.2.0/PureLive-3.2.0-4120-android-arm64-v8a-release.apk"
+        }
+      ],
+      "author": {
+        "login": "liwo1861a-hub",
+        "name": "liwo1861a-hub",
+        "profile": "https://github.com/liwo1861a-hub"
+      },
+      "changelog": "# Pure Live v3.2.0 (独立共存版)\n\n- 全新独立包名 `com.liwo.purelive`，完美支持与官方原版共存双开、互不干扰\n- 固化全新专属 100 年永久商业级签名 (SHA256: 351d91c7dfcd180313f0fd42b781a81b846ae6f6bc074a84d7384623bccadee5)\n- 彻底修复后台 1 分钟断网暂停 (加入 24 小时长效唤醒与高性能 WiFi 保活)\n- 彻底修复从后台恢复无限卡循环 2 秒 (切回前台自动拉取最新直播现场流并清空旧缓存)\n- 彻底修复录制 5 分钟切片合成大视频报错 (ADTS 比特流转换 + 极速重编码双模容灾)",
+      "createdAt": "2026-10-10T08:00:00Z",
+      "isDraft": false,
+      "isPrerelease": false,
+      "name": "Pure Live v3.2.0 (独立共存版)",
+      "publishedAt": "2026-10-10T08:00:00Z",
+      "tagName": "v3.2.0",
+      "url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0"
+    },
+    {
+      "assets": [
+        {
           "name": "PureLive-3.1.20-4110-android-arm64-v8a-release.apk",
           "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.1.20/PureLive-3.1.20-4110-android-arm64-v8a-release.apk"
         }

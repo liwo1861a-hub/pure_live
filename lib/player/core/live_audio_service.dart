@@ -44,7 +44,7 @@ class LiveAudioService {
     final handler = await AudioService.init(
       builder: () => LiveAudioHandler(),
       config: AudioServiceConfig(
-        androidNotificationChannelId: 'com.mystyle.purelive.audio',
+        androidNotificationChannelId: 'com.liwo.purelive.audio',
         androidNotificationChannelName: i18n("audio_channel_name"),
         androidNotificationOngoing: true,
         // Keep the media foreground service alive across short interruptions

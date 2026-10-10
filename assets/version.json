@@ -1,32 +1,32 @@
 {
-  "version": "3.1.20",
-  "build_number": 4110,
-  "version_num": 301204110,
+  "version": "3.2.0",
+  "build_number": 4120,
+  "version_num": 302004120,
   "android_abis": [
     "arm64-v8a"
   ],
-  "version_desc": "- 升级至 3.1.20 (高于官方 3.1.19)，支持免卸载直接覆盖安装\n- 彻底修复录制视频 5 分钟切片合成大视频报错：加入 ADTS 比特流过滤、PTS 连续性平滑重算与极速重编码双模容灾\n- 接入 Cloudflare 专属 CDN 加速下载通道，保障内陆用户免翻墙满速直连下载\n- 固化官方持久签名与 1:1 证书指纹门禁，保证数据完整性",
+  "version_desc": "- 全新独立独立共存版 (包名 com.liwo.purelive)，完美支持与旧版官方原版共存双开\n- 固化全新专属 100 年永久商业级签名 (SHA256: 351d91c7dfcd180313f0fd42b781a81b846ae6f6bc074a84d7384623bccadee5)\n- 彻底修复后台 1 分钟断网暂停 (加入 24 小时长效唤醒与高性能 WiFi 保活)\n- 彻底修复从后台恢复无限卡循环 2 秒 (切回前台自动拉取最新直播现场流并清空旧缓存)\n- 彻底修复录制 5 分钟切片合成大视频报错 (ADTS 比特流转换 + 极速重编码双模容灾)",
   "prerelease": false,
   "download_url": "https://github.com/liwo1861a-hub/pure_live/releases",
   "platforms": {
     "android": {
-      "version": "3.1.20",
-      "build_number": 4110,
-      "version_num": 301204110,
-      "version_desc": "- 升级至 3.1.20 (高于官方 3.1.19)，支持免卸载直接覆盖安装\n- 彻底修复录制视频 5 分钟切片合成大视频报错：加入 ADTS 比特流过滤、PTS 连续性平滑重算与极速重编码双模容灾\n- 接入 Cloudflare 专属 CDN 加速下载通道，保障内陆用户免翻墙满速直连下载\n- 固化官方持久签名与 1:1 证书指纹门禁，保证数据完整性",
+      "version": "3.2.0",
+      "build_number": 4120,
+      "version_num": 302004120,
+      "version_desc": "- 全新独立独立共存版 (包名 com.liwo.purelive)，完美支持与旧版官方原版共存双开\n- 固化全新专属 100 年永久商业级签名 (SHA256: 351d91c7dfcd180313f0fd42b781a81b846ae6f6bc074a84d7384623bccadee5)\n- 彻底修复后台 1 分钟断网暂停 (加入 24 小时长效唤醒与高性能 WiFi 保活)\n- 彻底修复从后台恢复无限卡循环 2 秒 (切回前台自动拉取最新直播现场流并清空旧缓存)\n- 彻底修复录制 5 分钟切片合成大视频报错 (ADTS 比特流转换 + 极速重编码双模容灾)",
       "prerelease": false,
-      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.1.20-android",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0-android",
       "android_abis": [
         "arm64-v8a"
       ]
     },
     "windows": {
-      "version": "3.1.20",
-      "build_number": 4110,
-      "version_num": 301204110,
-      "version_desc": "- 升级至 3.1.20 (高于官方 3.1.19)，支持免卸载直接覆盖安装\n- 彻底修复录制视频 5 分钟切片合成大视频报错：加入 ADTS 比特流过滤、PTS 连续性平滑重算与极速重编码双模容灾\n- 接入 Cloudflare 专属 CDN 加速下载通道，保障内陆用户免翻墙满速直连下载\n- 固化官方持久签名与 1:1 证书指纹门禁，保证数据完整性",
+      "version": "3.2.0",
+      "build_number": 4120,
+      "version_num": 302004120,
+      "version_desc": "- 全新独立独立共存版 (包名 com.liwo.purelive)，完美支持与旧版官方原版共存双开\n- 固化全新专属 100 年永久商业级签名 (SHA256: 351d91c7dfcd180313f0fd42b781a81b846ae6f6bc074a84d7384623bccadee5)\n- 彻底修复后台 1 分钟断网暂停 (加入 24 小时长效唤醒与高性能 WiFi 保活)\n- 彻底修复从后台恢复无限卡循环 2 秒 (切回前台自动拉取最新直播现场流并清空旧缓存)\n- 彻底修复录制 5 分钟切片合成大视频报错 (ADTS 比特流转换 + 极速重编码双模容灾)",
       "prerelease": false,
-      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.1.20-windows",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.0-windows",
       "windows_msix_available": false
     }
   }

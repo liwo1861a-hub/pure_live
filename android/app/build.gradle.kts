@@ -39,7 +39,7 @@ if (requireReleaseSigning && !hasReleaseSigning) {
 }
 
 extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
-    namespace = "com.mystyle.purelive"
+    namespace = "com.liwo.purelive"
     compileSdk = 37
     ndkVersion = flutter.ndkVersion
     lint {
@@ -52,13 +52,13 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
         targetCompatibility = JavaVersion.VERSION_17
     }
     defaultConfig {
-        applicationId = "com.mystyle.purelive"
+        applicationId = "com.liwo.purelive"
         minSdk = flutter.minSdkVersion 
         multiDexEnabled = true 
         targetSdk = 37
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["appLabel"] = "纯粹直播"
+        manifestPlaceholders["appLabel"] = "纯粹直播 Pro"
     }
 
     signingConfigs {
