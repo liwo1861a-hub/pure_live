@@ -50,14 +50,32 @@ final List<String> mirrors = [
 
 Future<void>? _activeDownloadDialog;
 
+String extractPureGithubUrl(String url) {
+  final clean = url.trim();
+  final match = RegExp(r'https?://github\.com/[^"\'\s]+').firstMatch(clean);
+  if (match != null) {
+    return match.group(0)!;
+  }
+  return clean;
+}
+
 List<String> getMirrorUrls(String apkUrl, {bool githubOriginOnly = false}) {
-  final uri = updateDownloadUri(apkUrl);
+  final pureUrl = extractPureGithubUrl(apkUrl);
+  final uri = updateDownloadUri(pureUrl);
   if (uri == null) return const [];
-  final normalizedUrl = uri.toString();
-  if (githubOriginOnly) return [normalizedUrl];
-  final mirrorsUrl = mirrors.map((e) => '$e$normalizedUrl').toList();
-  mirrorsUrl.add(normalizedUrl);
-  return mirrorsUrl.toSet().toList(growable: false);
+  final rawGithub = uri.toString();
+  if (githubOriginOnly) return [rawGithub];
+
+  final result = <String>[
+    // 1. 🌟 Cloudflare 专属极速加速源（国内免翻墙首选）
+    'https://gh.lz1861.ccwu.cc/$rawGithub',
+    // 2. 🌐 GitHub 官方源直链（海外/代理直连双保险）
+    rawGithub,
+    // 3. 🚀 国内高带宽备用镜像源
+    'https://ghproxy.net/$rawGithub',
+    for (final m in mirrors) '$m$rawGithub',
+  ];
+  return result.toSet().toList(growable: false);
 }
 
 Future<void> downloadAndInstallApk(String apkUrl, {String? fileName}) {

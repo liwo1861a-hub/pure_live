@@ -114,7 +114,13 @@ class VersionUtil {
 
       _applyVersionData(data);
 
-      await _loadLatestReleaseAssets();
+      try {
+        await _loadLatestReleaseAssets().timeout(const Duration(seconds: 3));
+      } catch (_) {
+        if (latestAssets.isEmpty) {
+          latestAssets = _generateDefaultAssets(latestVersion);
+        }
+      }
 
       _cachedVersionJson = data;
 
@@ -165,8 +171,37 @@ class VersionUtil {
           .toList();
     } catch (e, s) {
       Log.e('[version] releases.json 获取失败: $e', s);
-      latestAssets = [];
+    } finally {
+      if (latestAssets.isEmpty) {
+        latestAssets = _generateDefaultAssets(latestVersion);
+      }
     }
+  }
+
+  static List<Map<String, dynamic>> _generateDefaultAssets(String version) {
+    final cleanVer = _normalizeVersion(version);
+    final tag = 'v$cleanVer';
+    final repoOwner = updateOwner;
+    final repoName = updateRepository;
+    final baseDownloadUrl = 'https://github.com/$repoOwner/$repoName/releases/download/$tag';
+
+    return [
+      {
+        'name': 'android-arm64-v8a',
+        'url': '$baseDownloadUrl/PureLive-$cleanVer-android-arm64-v8a.apk',
+        'browser_download_url': '$baseDownloadUrl/PureLive-$cleanVer-android-arm64-v8a.apk',
+      },
+      {
+        'name': 'android-armeabi-v7a',
+        'url': '$baseDownloadUrl/PureLive-$cleanVer-android-armeabi-v7a.apk',
+        'browser_download_url': '$baseDownloadUrl/PureLive-$cleanVer-android-armeabi-v7a.apk',
+      },
+      {
+        'name': 'android-x86_64',
+        'url': '$baseDownloadUrl/PureLive-$cleanVer-android-x86_64.apk',
+        'browser_download_url': '$baseDownloadUrl/PureLive-$cleanVer-android-x86_64.apk',
+      },
+    ];
   }
 
   static String _normalizeVersion(String value) {
