@@ -9,11 +9,12 @@ import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 class DanmakuSimilarityFilter {
   DanmakuSimilarityFilter({
     int similarityThreshold = 85,
-    this._cacheDuration = const Duration(seconds: 3),
+    Duration cacheDuration = const Duration(seconds: 3),
     int maxCacheSize = 100,
     int maxComparisons = 96,
     DateTime Function()? clock,
   }) : _similarityThreshold = similarityThreshold.clamp(0, 100),
+       _cacheDuration = cacheDuration,
        _maxCacheSize = maxCacheSize.clamp(1, 1000),
        _maxComparisons = maxComparisons.clamp(1, 256),
        _clock = clock ?? DateTime.now;
