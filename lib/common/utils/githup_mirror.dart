@@ -19,4 +19,15 @@ class GitHubMirror {
   List<String> mirrors(String filePath) {
     return [rawUrl(filePath), officialRawUrl(filePath)];
   }
+
+  /// 将任意 GitHub Release 下载直链转换为 Cloudflare 专属极速代理直链，保障内陆用户免翻墙满速下载
+  static String speedUpUrl(String originalUrl) {
+    final trimmed = originalUrl.trim();
+    if (trimmed.isEmpty) return trimmed;
+    if (trimmed.startsWith('https://gh.lz1861.ccwu.cc/')) return trimmed;
+    if (trimmed.contains('github.com/') || trimmed.contains('githubusercontent.com/')) {
+      return 'https://gh.lz1861.ccwu.cc/$trimmed';
+    }
+    return trimmed;
+  }
 }

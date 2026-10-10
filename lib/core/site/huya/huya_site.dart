@@ -192,7 +192,7 @@ class HuyaSite implements LiveSite, LiveSiteRoomRefresher {
     if (playUserAgent != null) {
       return playUserAgent!;
     }
-    final mirror = GitHubMirror(owner: 'liuchuancong', repo: 'pure_live', branch: 'master');
+    final mirror = VersionUtil.mirror;
     final urls = mirror.mirrors('assets/play_config.json');
     final data = await RaceHttp.fetchJson(urls);
     final ua = data?['huya']?['user_agent']?.toString().trim();

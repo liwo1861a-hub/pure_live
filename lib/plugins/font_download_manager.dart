@@ -97,7 +97,7 @@ class FontDownloadManager {
     log("Starting block download pipeline for font family: $fontId");
 
     try {
-      final mirror = GitHubMirror(owner: 'liuchuancong', repo: 'fonts', branch: 'master');
+      final mirror = GitHubMirror(owner: VersionUtil.updateOwner, repo: 'fonts', branch: 'master');
 
       for (final filePath in fontModel.files) {
         final fileName = filePath.split('/').last;

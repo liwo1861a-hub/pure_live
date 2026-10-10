@@ -14,26 +14,28 @@ class VersionUtil {
   /// Release/update repository for this maintained distribution.
   ///
   /// Keeping the owner configurable lets downstream builders select their own
-  /// release feed without editing runtime code. This repository defaults to
-  /// the liuchuancong maintenance release channel so its bundled version.json and generated asset
-  /// URLs always describe the same published artifacts.
+  /// release feed without editing runtime code. Defaults to the maintained release feed.
   static String get updateOwner => AppConfig.pureliveUpdateOwner;
   static String get updateRepository => AppConfig.pureliveUpdateRepository;
   static String get projectUrl => 'https://github.com/$updateOwner/$updateRepository';
   static String get issuesUrl => '$projectUrl/issues';
   static String get githubUrl => 'https://github.com/$updateOwner';
 
-  static const String email = '17792321552@163.com';
-  static const String emailUrl = 'mailto:17792321552@163.com?subject=PureLive Feedback';
+  static const String email = 'luzi1861a@gmail.com';
+  static const String emailUrl = 'mailto:luzi1861a@gmail.com?subject=PureLive Feedback';
 
-  static const String telegramGroup = 't.me/pure_live_channel';
-  static const String telegramGroupUrl = 'https://t.me/pure_live_channel';
+  static const String telegramGroup = 't.me/lzvideo_channel';
+  static const String telegramGroupUrl = 'https://t.me/lzvideo_channel';
 
-  static String get releaseUrl => 'https://api.github.com/repos/$updateOwner/$updateRepository/releases?per_page=30';
+  static String get releaseUrl => 'https://gh.lz1861.ccwu.cc/https://api.github.com/repos/$updateOwner/$updateRepository/releases?per_page=30';
 
   static GitHubMirror get mirror => GitHubMirror(owner: updateOwner, repo: updateRepository, branch: 'master');
 
-  static List<String> get _versionUrls => [mirror.rawUrl('assets/version.json'), mirror.officialRawUrl('assets/version.json')];
+  static List<String> get _versionUrls => [
+    'https://gh.lz1861.ccwu.cc/api/version',
+    mirror.rawUrl('assets/version.json'),
+    mirror.officialRawUrl('assets/version.json'),
+  ];
 
   final isHasNewVersion = false.obs;
 
@@ -108,7 +110,8 @@ class VersionUtil {
     latestBuildNumber = selected['build_number'];
     latestUpdateLog = selected['version_desc']?.toString() ?? '';
     prerelease = selected['prerelease'] == true;
-    downloadUrl = selected['download_url']?.toString() ?? '';
+    final rawDownloadUrl = selected['download_url']?.toString() ?? '';
+    downloadUrl = GitHubMirror.speedUpUrl(rawDownloadUrl);
     latestAndroidAbis = selectAndroidAbis(selected);
     latestWindowsMsixAvailable = selected['windows_msix_available'] == true;
   }

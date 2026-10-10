@@ -17,6 +17,7 @@ List<String> getMirrorUrls(String apkUrl, {bool githubOriginOnly = false}) {
 }
 
 Future<void> downloadAndInstallApk(String apkUrl, {String? fileName}) async {
+  final acceleratedUrl = GitHubMirror.speedUpUrl(apkUrl);
   if (Platform.isAndroid) {
     try {
       final hasInstallPermission = await requestStorageInstallPermission();
@@ -31,7 +32,7 @@ Future<void> downloadAndInstallApk(String apkUrl, {String? fileName}) async {
   }
   ToastUtil.show(i18n("downloading_apk", args: {"version": VersionUtil.latestVersion}));
   Get.dialog(
-    DownloadApkDialog(apkUrl: apkUrl, version: VersionUtil.latestVersion, fileName: fileName),
+    DownloadApkDialog(apkUrl: acceleratedUrl, version: VersionUtil.latestVersion, fileName: fileName),
     barrierDismissible: false,
   );
 }

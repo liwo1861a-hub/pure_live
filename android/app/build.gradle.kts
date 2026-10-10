@@ -11,22 +11,31 @@ plugins {
 
 apply(plugin = "com.google.gms.google-services")
 
-// 加载签名配置
+// 加载签名配置（永久固定签名保证覆盖更新不冲突）
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
         keystorePropertiesFile.inputStream().use(::load)
     }
 }
-val releaseStoreFile = keystoreProperties.getProperty("storeFile")?.let(::file)
-val hasReleaseSigning = listOf("keyAlias", "keyPassword", "storePassword").all {
-    !keystoreProperties.getProperty(it).isNullOrBlank()
-} && releaseStoreFile?.isFile == true
+val rawStoreFile = keystoreProperties.getProperty("storeFile") ?: "purelive-release.jks"
+val releaseStoreFile = listOf(
+    file(rawStoreFile),
+    rootProject.file(rawStoreFile),
+    file("purelive-release.jks"),
+    rootProject.file("app/purelive-release.jks")
+).firstOrNull { it.isFile }
+
+val resolvedKeyAlias = keystoreProperties.getProperty("keyAlias") ?: "purelive"
+val resolvedKeyPassword = keystoreProperties.getProperty("keyPassword") ?: "purelive123"
+val resolvedStorePassword = keystoreProperties.getProperty("storePassword") ?: "purelive123"
+val hasReleaseSigning = releaseStoreFile?.isFile == true && !resolvedKeyAlias.isNullOrBlank()
+
 val requireReleaseSigning =
     providers.gradleProperty("pureLive.requireReleaseSigning").orNull.toBoolean() ||
         providers.gradleProperty("pureLiveRequireReleaseSigning").orNull.toBoolean()
 if (requireReleaseSigning && !hasReleaseSigning) {
-    throw GradleException("Release signing is required but android/key.properties is incomplete.")
+    throw GradleException("Release signing is required but release keystore is missing.")
 }
 
 extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
@@ -55,10 +64,10 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
     signingConfigs {
         if (hasReleaseSigning) {
             create("release") {
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
+                keyAlias = resolvedKeyAlias
+                keyPassword = resolvedKeyPassword
                 storeFile = releaseStoreFile
-                storePassword = keystoreProperties.getProperty("storePassword")
+                storePassword = resolvedStorePassword
             }
         }
     }
