@@ -3,6 +3,27 @@
     {
       "assets": [
         {
+          "name": "PureLive-3.1.20-4110-android-arm64-v8a-release.apk",
+          "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.1.20/PureLive-3.1.20-4110-android-arm64-v8a-release.apk"
+        }
+      ],
+      "author": {
+        "login": "liwo1861a-hub",
+        "name": "liwo1861a-hub",
+        "profile": "https://github.com/liwo1861a-hub"
+      },
+      "changelog": "# Pure Live v3.1.20\n\n- 升级至 3.1.20 (高于官方 3.1.19)，支持免卸载直接覆盖安装\n- 彻底修复录制视频 5 分钟切片合成大视频报错：加入 ADTS 比特流过滤、PTS 连续性平滑重算与极速重编码双模容灾\n- 接入 Cloudflare 专属 CDN 加速下载通道，保障内陆用户免翻墙满速直连下载\n- 固化官方持久签名与 1:1 证书指纹门禁，保证数据完整性",
+      "createdAt": "2026-10-10T07:40:00Z",
+      "isDraft": false,
+      "isPrerelease": false,
+      "name": "Pure Live v3.1.20",
+      "publishedAt": "2026-10-10T07:40:00Z",
+      "tagName": "v3.1.20",
+      "url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.1.20"
+    },
+    {
+      "assets": [
+        {
           "name": "PureLive-3.0.6-4094-android-arm64-v8a-release.apk",
           "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.0.6/PureLive-3.0.6-4094-android-arm64-v8a-release.apk"
         }
