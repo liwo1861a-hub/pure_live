@@ -68,6 +68,8 @@ extensions.configure<com.android.build.api.dsl.ApplicationExtension> {
                 keyPassword = resolvedKeyPassword
                 storeFile = releaseStoreFile
                 storePassword = resolvedStorePassword
+                enableV1Signing = true
+                enableV2Signing = true
             }
         }
     }

@@ -67,10 +67,21 @@ jobs:
           echo "========================================================"
           echo "Verifying APK release signature for: $APK_FILE"
           echo "========================================================"
-          CERT_OUTPUT=$(keytool -printcert -jarfile "$APK_FILE" 2>&1 || true)
+          
+          APKSIGNER=$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -n1 || true)
+          if [ -n "$APKSIGNER" ] && [ -x "$APKSIGNER" ]; then
+            echo "Using apksigner: $APKSIGNER"
+            CERT_OUTPUT=$("$APKSIGNER" verify --print-certs "$APK_FILE" 2>&1 || true)
+          else
+            echo "Using keytool fallback"
+            CERT_OUTPUT=$(keytool -printcert -jarfile "$APK_FILE" 2>&1 || true)
+          fi
           echo "$CERT_OUTPUT"
           
-          ACTUAL_SHA256=$(echo "$CERT_OUTPUT" | grep -i "SHA256:" | head -n1 | sed -e 's/.*SHA256: *//' -e 's/ *//g' -e 's/://g' | tr '[:upper:]' '[:lower:]')
+          ACTUAL_SHA256=$(echo "$CERT_OUTPUT" | grep -i "SHA-256 digest:" | head -n1 | sed -e 's/.*SHA-256 digest: *//' -e 's/ *//g' -e 's/://g' | tr '[:upper:]' '[:lower:]')
+          if [ -z "$ACTUAL_SHA256" ]; then
+            ACTUAL_SHA256=$(echo "$CERT_OUTPUT" | grep -i "SHA256:" | head -n1 | sed -e 's/.*SHA256: *//' -e 's/ *//g' -e 's/://g' | tr '[:upper:]' '[:lower:]')
+          fi
           echo "Extracted SHA256 (clean): $ACTUAL_SHA256"
           echo "Expected SHA256 (clean):  $EXPECTED_CLEAN"
           
