@@ -351,9 +351,11 @@ class VersionPage extends GetView<VersionController> {
                             : () => _showActionDialog(context, title, mirrorUrls[i], i + 1),
                         icon: const Icon(Remix.link_m, size: 14),
                         label: Text(
-                          githubOriginOnly
-                              ? i18n('github_origin_source')
-                              : i18n("download_source", args: {"num": "${i + 1}"}),
+                          mirrorUrls[i].contains('gh.lz1861.ccwu.cc')
+                              ? '⚡ 极速源 (推荐)'
+                              : (!mirrorUrls[i].contains('gh') && !mirrorUrls[i].contains('proxy') && mirrorUrls[i].contains('github.com'))
+                                  ? '🌐 GitHub 官方源'
+                                  : i18n("download_source", args: {"num": "${i + 1}"}),
                           style: AppTextStyles.t12.copyWith(fontWeight: FontWeight.w600),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -406,7 +408,11 @@ class VersionPage extends GetView<VersionController> {
                     Text(platformName, style: AppTextStyles.t15.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 2),
                     Text(
-                      i18n("download_source", args: {"num": "$sourceIndex"}),
+                      targetUrl.contains('gh.lz1861.ccwu.cc')
+                          ? '⚡ Cloudflare 极速下载源 (国内免翻墙)'
+                          : (!targetUrl.contains('gh') && !targetUrl.contains('proxy') && targetUrl.contains('github.com'))
+                              ? '🌐 GitHub 官方直链源'
+                              : i18n("download_source", args: {"num": "$sourceIndex"}),
                       style: AppTextStyles.t11.copyWith(color: theme.hintColor),
                     ),
                   ],

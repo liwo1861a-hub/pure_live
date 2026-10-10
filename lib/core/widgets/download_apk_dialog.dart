@@ -188,7 +188,12 @@ class _DownloadApkDialogState extends State<DownloadApkDialog> {
 
     _cancelToken = CancelToken();
 
-    _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15), receiveTimeout: const Duration(seconds: 120)));
+    _dio = Dio(BaseOptions(
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(minutes: 15),
+      followRedirects: true,
+      maxRedirects: 5,
+    ));
 
     if (widget.startAutomatically) {
       unawaited(Future<void>.microtask(_startDownload));
@@ -264,7 +269,9 @@ class _DownloadApkDialogState extends State<DownloadApkDialog> {
       destinationPath,
       options: Options(
         headers: const {'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'Expires': '0'},
-        receiveTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(minutes: 15),
+        followRedirects: true,
+        maxRedirects: 5,
       ),
       onReceiveProgress: onProgress,
       cancelToken: cancelToken,

@@ -23,6 +23,9 @@ Future<bool> requestStorageInstallPermission() async {
 }
 
 final List<String> mirrors = [
+  // 🌟 Cloudflare 专属极速加速源（首选）
+  'https://gh.lz1861.ccwu.cc/',
+
   // 🟢 asset=206: resumable, best for large files
   'https://cdn.gh-proxy.org/',
   'https://edgeone.gh-proxy.org/',
