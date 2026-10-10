@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: zulu
-          java-version: '17'
+          java-version: '26'
           cache: gradle
 
       - name: Set up Flutter
@@ -53,11 +53,18 @@ jobs:
       - name: Resolve packages
         run: flutter pub get
 
+      - name: Generate production AppConfig
+        run: |
+          dart run enven \
+            --env-files .env,.env.prod \
+            --class-name AppConfig
+
       - name: Build Android release APK (Split ABI)
         run: |
           flutter build apk \
             --release \
-            --split-per-abi
+            --split-per-abi \
+            --dart-define=PURELIVE_BUILD_SOURCE=github-manual
 
       - name: Strict 1:1 Signature Verification Gatekeeper
         shell: bash
@@ -145,3 +152,4 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
