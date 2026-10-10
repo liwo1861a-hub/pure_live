@@ -1,4 +1,4 @@
-﻿name: PureLive Android Build & Release
+name: PureLive Android Build & Release
 
 on:
   workflow_dispatch:
@@ -60,6 +60,8 @@ jobs:
             --class-name AppConfig
 
       - name: Build Android release APK (Split ABI)
+        env:
+          GRADLE_OPTS: -Dorg.gradle.configuration-cache=false
         run: |
           flutter build apk \
             --release \
