@@ -240,7 +240,7 @@ class RoomCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 4),
                 child: Text(
-                  i18n('room_id_label', args: {"id": ?room.roomId}),
+                  i18n('room_id_label', args: {"id": room.roomId ?? ''}),
                   style: AppTextStyles.t11.copyWith(
                     color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     fontWeight: FontWeight.bold,

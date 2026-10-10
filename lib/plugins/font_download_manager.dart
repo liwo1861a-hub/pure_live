@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io' hide HttpClient;
 
 import 'package:flutter/services.dart';
+import 'package:pure_live/gen/env.g.dart';
 import 'package:pure_live/plugins/race_http.dart';
 import 'package:pure_live/core/common/http_client.dart';
 import 'package:pure_live/common/models/font_model.dart';
@@ -97,7 +98,7 @@ class FontDownloadManager {
     log("Starting block download pipeline for font family: $fontId");
 
     try {
-      final mirror = GitHubMirror(owner: VersionUtil.updateOwner, repo: 'fonts', branch: 'master');
+      final mirror = GitHubMirror(owner: AppConfig.pureliveUpdateOwner, repo: 'fonts', branch: 'master');
 
       for (final filePath in fontModel.files) {
         final fileName = filePath.split('/').last;
