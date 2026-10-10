@@ -52,9 +52,13 @@ Future<void>? _activeDownloadDialog;
 
 String extractPureGithubUrl(String url) {
   final clean = url.trim();
-  final match = RegExp(r'https?://github\.com/[^"\'\s]+').firstMatch(clean);
-  if (match != null) {
-    return match.group(0)!;
+  final index = clean.indexOf('https://github.com/');
+  if (index >= 0) {
+    return clean.substring(index);
+  }
+  final httpIndex = clean.indexOf('http://github.com/');
+  if (httpIndex >= 0) {
+    return clean.substring(httpIndex);
   }
   return clean;
 }
