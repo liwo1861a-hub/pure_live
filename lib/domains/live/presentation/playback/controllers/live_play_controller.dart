@@ -205,19 +205,21 @@ class LivePlayController extends GetxController
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden || state == AppLifecycleState.detached) {
+  void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    if (lifecycleState == AppLifecycleState.paused ||
+        lifecycleState == AppLifecycleState.hidden ||
+        lifecycleState == AppLifecycleState.detached) {
       _wasBackgrounded = true;
       return;
     }
-    if (state != AppLifecycleState.resumed || !_wasBackgrounded) return;
+    if (lifecycleState != AppLifecycleState.resumed || !_wasBackgrounded) return;
     _wasBackgrounded = false;
     if (!GlobalPlayerService.instance.player.isInPip.value) {
       _restoreDanmakuPresentation();
       // 关键修复：从后台回到前台时，只要房间开播且未被手动关闭，自动静默刷新拉取最新流，彻底消灭黑屏与几秒钟无限卡顿死循环！
-      final currentRoom = state.value.room;
+      final currentRoom = this.state.value.room;
       if (currentRoom.isLiving && !isClosed && !_ownerClosed) {
-        final videoController = state.value.player.videoController;
+        final videoController = this.state.value.player.videoController;
         if (videoController != null) {
           unawaited(videoController.refresh());
         } else {
