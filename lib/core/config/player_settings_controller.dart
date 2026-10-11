@@ -212,7 +212,7 @@ class PlayerSettingsController extends GetxController {
     audioExclusive.listen((_) => persist());
   }
 
-  final RxBool floatPlay = hiveBool('floatPlay', false);
+  final RxBool floatPlay = hiveBool('floatPlay', true);
 
   final RxString floatWindowGeometry = hiveString('floatWindowGeometry', '');
   final RxBool windowsPipAlwaysOnTop = hiveBool('windowsPipAlwaysOnTop', false);
@@ -539,7 +539,7 @@ class PlayerSettingsController extends GetxController {
         typed<String>(json['videoHardwareDecoder'] ?? 'auto'),
         defaultTargetPlatform,
       ),
-      'floatPlay': typed<bool>(json['floatPlay'] ?? false),
+      'floatPlay': typed<bool>(json['floatPlay'] ?? true),
       'floatWindowGeometry': typed<String>(json['floatWindowGeometry']?.toString() ?? ''),
       'windowsPipAlwaysOnTop': typed<bool>(json['windowsPipAlwaysOnTop'] ?? false),
       'windowsPipFreeAspect': typed<bool>(json['windowsPipFreeAspect'] ?? false),
@@ -638,7 +638,7 @@ class PlayerSettingsController extends GetxController {
         (player['videoHardwareDecoder'] ?? 'auto') as String,
         defaultTargetPlatform,
       ),
-      'floatPlay': player['floatPlay'] ?? false,
+      'floatPlay': player['floatPlay'] ?? true,
       'floatWindowGeometry': player['floatWindowGeometry']?.toString() ?? '',
       'windowsPipAlwaysOnTop': player['windowsPipAlwaysOnTop'] ?? false,
       'windowsPipFreeAspect': player['windowsPipFreeAspect'] ?? false,

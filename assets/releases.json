@@ -1,5 +1,24 @@
 [
   {
+    "version": "3.2.4",
+    "title": "v3.2.4 (退出直播间自动悬浮小窗版)",
+    "date": "2026-10-10",
+    "github": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.4",
+    "author": {
+      "name": "liwo1861a-hub",
+      "profile": "https://github.com/liwo1861a-hub"
+    },
+    "changelog": "# Pure Live v3.2.4 (退出直播间自动悬浮小窗版)\n\n- 新增退出直播间自动小窗悬浮播放功能：无论点击返回、侧滑还是物理返回退出直播间，自动无缝切换为右下角可拖动悬浮小窗继续播放，支持点击恢复全屏与随时关闭\n- 彻底根除切回前台无限卡循环 2 秒：切回前台自动触发 replay 实时流对齐，瞬间清空 2 秒过期旧缓存\n- 彻底根除挂后台停止播放：默认开启后台保活，并解除后台 1.5 秒硬暂停拦截\n- 彻底解决检查更新卡顿：优化 assets/version.json 秒级直出机制，进入关于页 0 秒瞬间刷出新版与下载按钮\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道自主选择\n- 彻底修复软件内下载失败：下载超时由 30 秒扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，大幅提升大文件下载速度\n- 全新独立包名 `com.liwo.purelive`，桌面显示“纯粹直播 Pro”，完美支持与官方原版共存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名",
+    "files": [
+      {
+        "name": "PureLive-3.2.4-android-arm64-v8a.apk",
+        "size": "138.0mb",
+        "downloads": 0,
+        "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.2.4/PureLive-3.2.4-android-arm64-v8a.apk"
+      }
+    ]
+  },
+  {
     "version": "3.2.3",
     "title": "v3.2.3 (后台保活与前台恢复终极修复版)",
     "date": "2026-10-10",
