@@ -214,10 +214,15 @@ class LivePlayController extends GetxController
     _wasBackgrounded = false;
     if (!GlobalPlayerService.instance.player.isInPip.value) {
       _restoreDanmakuPresentation();
-      // 关键修复：从后台回到前台时，清空过期 2 秒旧缓存，重新拉取最新推流现场，彻底消除无限卡顿循环！
-      final player = GlobalPlayerService.instance.player;
-      if (player.isPlayingNow) {
-        unawaited(player.replay());
+      // 关键修复：从后台回到前台时，只要房间开播且未被手动关闭，自动静默刷新拉取最新流，彻底消灭黑屏与几秒钟无限卡顿死循环！
+      final currentRoom = state.value.room;
+      if (currentRoom.isLiving && !isClosed && !_ownerClosed) {
+        final videoController = state.value.player.videoController;
+        if (videoController != null) {
+          unawaited(videoController.refresh());
+        } else {
+          unawaited(GlobalPlayerService.instance.player.replay());
+        }
       }
     }
   }
@@ -803,6 +808,8 @@ class LivePlayController extends GetxController
       }
 
       await _syncDanmakuConnection(liveRoom);
+      // 起播成功立即激活后台保活（唤醒锁与WiFi锁），杜绝切后台被系统断网
+      unawaited(LiveAudioService.syncKeepAlive());
     } catch (error, stackTrace) {
       developer.log(
         'Live room initialization failed (${error.runtimeType})',

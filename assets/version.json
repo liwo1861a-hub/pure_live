@@ -1,23 +1,23 @@
 {
-  "version": "3.2.4",
-  "build_number": 4124,
-  "version_num": 302044124,
+  "version": "3.2.5",
+  "build_number": 4125,
+  "version_num": 302054125,
   "android_abis": [
     "arm64-v8a",
     "armeabi-v7a",
     "x86_64"
   ],
-  "version_desc": "- 新增退出直播间自动小窗悬浮播放功能：无论点击返回、侧滑还是物理返回退出直播间，自动无缝切换为右下角可拖动悬浮小窗继续播放，支持点击恢复全屏与随时关闭\n- 彻底根除切回前台无限卡循环 2 秒：切回前台自动触发 replay 实时流对齐，瞬间清空 2 秒过期旧缓存\n- 彻底根除挂后台停止播放：默认开启后台保活，并解除后台 1.5 秒硬暂停拦截\n- 彻底根除更新检查卡顿：优化 assets/version.json 秒级直出机制，进入关于页 0 秒瞬间刷出新版与下载按钮\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道自主选择\n- 彻底修复软件内下载失败：下载超时由 30 秒扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，大幅提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名",
+  "version_desc": "- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流（等效于手动点击刷新），瞬间清空旧缓存并重绑渲染表面，彻底消灭黑屏与卡顿\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁，解除后台断网限制\n- 退出直播间自动小窗悬浮播放功能 (默认开启)\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
   "prerelease": false,
-  "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.4",
+  "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.5",
   "platforms": {
     "android": {
-      "version": "3.2.4",
-      "build_number": 4124,
-      "version_num": 302044124,
-      "version_desc": "- 新增退出直播间自动小窗悬浮播放功能：无论点击返回、侧滑还是物理返回退出直播间，自动无缝切换为右下角可拖动悬浮小窗继续播放，支持点击恢复全屏与随时关闭\n- 彻底根除切回前台无限卡循环 2 秒：切回前台自动触发 replay 实时流对齐，瞬间清空 2 秒过期旧缓存\n- 彻底根除挂后台停止播放：默认开启后台保活，并解除后台 1.5 秒硬暂停拦截\n- 彻底根除更新检查卡顿：优化 assets/version.json 秒级直出机制，进入关于页 0 秒瞬间刷出新版与下载按钮\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道自主选择\n- 彻底修复软件内下载失败：下载超时由 30 秒扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，大幅提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名",
+      "version": "3.2.5",
+      "build_number": 4125,
+      "version_num": 302054125,
+      "version_desc": "- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流（等效于手动点击刷新），瞬间清空旧缓存并重绑渲染表面，彻底消灭黑屏与卡顿\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁，解除后台断网限制\n- 退出直播间自动小窗悬浮播放功能 (默认开启)\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
       "prerelease": false,
-      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.4",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.5",
       "android_abis": [
         "arm64-v8a",
         "armeabi-v7a",
@@ -25,12 +25,12 @@
       ]
     },
     "windows": {
-      "version": "3.2.4",
-      "build_number": 4124,
-      "version_num": 302044124,
-      "version_desc": "- 新增退出直播间自动小窗悬浮播放功能：无论点击返回、侧滑还是物理返回退出直播间，自动无缝切换为右下角可拖动悬浮小窗继续播放，支持点击恢复全屏与随时关闭\n- 彻底根除切回前台无限卡循环 2 秒：切回前台自动触发 replay 实时流对齐，瞬间清空 2 秒过期旧缓存\n- 彻底根除挂后台停止播放：默认开启后台保活，并解除后台 1.5 秒硬暂停拦截\n- 彻底根除更新检查卡顿：优化 assets/version.json 秒级直出机制，进入关于页 0 秒瞬间刷出新版与下载按钮\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道自主选择\n- 彻底修复软件内下载失败：下载超时由 30 秒扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，大幅提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 修复录制 5 分钟切片合成大视频报错 (ADTS 转换与容灾)\n- 永久固化全新专属 100 年商业级签名",
+      "version": "3.2.5",
+      "build_number": 4125,
+      "version_num": 302054125,
+      "version_desc": "- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流（等效于手动点击刷新），瞬间清空旧缓存并重绑渲染表面，彻底消灭黑屏与卡顿\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁，解除后台断网限制\n- 退出直播间自动小窗悬浮播放功能 (默认开启)\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
       "prerelease": false,
-      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.4",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.5",
       "windows_msix_available": true
     }
   }
