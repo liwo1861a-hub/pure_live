@@ -1,23 +1,23 @@
 {
-  "version": "3.2.5",
-  "build_number": 4125,
-  "version_num": 302054125,
+  "version": "3.2.6",
+  "build_number": 4126,
+  "version_num": 302064126,
   "android_abis": [
     "arm64-v8a",
     "armeabi-v7a",
     "x86_64"
   ],
-  "version_desc": "- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流（等效于手动点击刷新），瞬间清空旧缓存并重绑渲染表面，彻底消灭黑屏与卡顿\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁，解除后台断网限制\n- 退出直播间自动小窗悬浮播放功能 (默认开启)\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
+  "version_desc": "- 彻底实现退出直播间立马自动开启小窗播放：无论是在软件内退出直播间（自动开启可拖动应用内悬浮小窗），还是直接按 Home / 手势上滑退到手机系统桌面（自动进入 Android 系统级画中画 PiP 小窗播放），全场景全自动秒级小窗无缝衔接\n- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流，瞬间清空旧缓存并重绑渲染表面\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
   "prerelease": false,
-  "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.5",
+  "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.6",
   "platforms": {
     "android": {
-      "version": "3.2.5",
-      "build_number": 4125,
-      "version_num": 302054125,
-      "version_desc": "- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流（等效于手动点击刷新），瞬间清空旧缓存并重绑渲染表面，彻底消灭黑屏与卡顿\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁，解除后台断网限制\n- 退出直播间自动小窗悬浮播放功能 (默认开启)\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
+      "version": "3.2.6",
+      "build_number": 4126,
+      "version_num": 302064126,
+      "version_desc": "- 彻底实现退出直播间立马自动开启小窗播放：无论是在软件内退出直播间（自动开启可拖动应用内悬浮小窗），还是直接按 Home / 手势上滑退到手机系统桌面（自动进入 Android 系统级画中画 PiP 小窗播放），全场景全自动秒级小窗无缝衔接\n- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流，瞬间清空旧缓存并重绑渲染表面\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
       "prerelease": false,
-      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.5",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.6",
       "android_abis": [
         "arm64-v8a",
         "armeabi-v7a",
@@ -25,12 +25,12 @@
       ]
     },
     "windows": {
-      "version": "3.2.5",
-      "build_number": 4125,
-      "version_num": 302054125,
-      "version_desc": "- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流（等效于手动点击刷新），瞬间清空旧缓存并重绑渲染表面，彻底消灭黑屏与卡顿\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁，解除后台断网限制\n- 退出直播间自动小窗悬浮播放功能 (默认开启)\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
+      "version": "3.2.6",
+      "build_number": 4126,
+      "version_num": 302064126,
+      "version_desc": "- 彻底实现退出直播间立马自动开启小窗播放：无论是在软件内退出直播间（自动开启可拖动应用内悬浮小窗），还是直接按 Home / 手势上滑退到手机系统桌面（自动进入 Android 系统级画中画 PiP 小窗播放），全场景全自动秒级小窗无缝衔接\n- 彻底解决从后台切回前台黑屏与卡顿死循环：前台恢复时自动执行静默重拉新流，瞬间清空旧缓存并重绑渲染表面\n- 彻底解决挂后台停止播放：起播成功立即激活 24 小时 WakeLock 与 WiFi 保活锁\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
       "prerelease": false,
-      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.5",
+      "download_url": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.6",
       "windows_msix_available": true
     }
   }

@@ -84,7 +84,8 @@ class LiveRouteObserver extends RouteObserver<PageRoute<dynamic>> {
     controller.updateRoom(success: false);
 
     final playerManager = GlobalPlayerService.instance.player;
-    final canFloat = shouldFloatAfterLivePlayExit(state.room, hasVideo: state.player.videoController != null);
+    // 关键修复：只要房间处于开播状态、播放器正在播放或有视频，退出直播间时一律允许自动开启小窗播放！
+    final canFloat = (state.room.isLiving || playerManager.isPlayingNow || state.player.videoController != null) && state.room.loadError == null;
     if (canFloat && _shouldShowFloating(preventFloating)) {
       _showFloatingAfterExit(route: route, controller: controller, playerManager: playerManager);
     } else {
@@ -140,6 +141,13 @@ class LiveRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   }) {
     final routeExitCompleted = _waitForRouteExit(route);
     controller.prepareAppFloating(routeUnmounted: routeExitCompleted);
+    // 立即通过下一帧调度展示应用内悬浮小窗，杜绝转场动画阻塞导致小窗漏出
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final current = Get.currentRoute;
+      if (current == RoutePath.kLivePlay || current == RoutePath.kMultiview) return;
+      if (current == RoutePath.kLocalVideoPlayer) return;
+      playerManager.showAppFloating();
+    });
     unawaited(
       routeExitCompleted.then((_) {
         // Race guard: opening another live room or the multiview grid right

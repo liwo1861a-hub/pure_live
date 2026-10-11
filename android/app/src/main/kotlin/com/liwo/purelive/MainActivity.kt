@@ -1,5 +1,6 @@
-﻿package com.liwo.purelive
+package com.liwo.purelive
 
+import android.app.PictureInPictureParams
 import android.content.Context
 import android.graphics.Color
 import android.hardware.display.DisplayManager
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.util.Rational
 import android.view.Display
 import android.view.View
 import android.view.WindowInsets
@@ -395,11 +397,39 @@ class MainActivity : AudioServiceActivity() {
 
         scheduleDisplayModeRefresh(delayMillis = 0)
 
+        // Android 12+ (API 31+): 开启手势上滑回到系统桌面自动无缝进入系统画中画小窗
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                val params = PictureInPictureParams.Builder()
+                    .setAutoEnterEnabled(true)
+                    .setAspectRatio(Rational(16, 9))
+                    .build()
+                setPictureInPictureParams(params)
+            } catch (_: Exception) {}
+        }
+
         if (
             predictiveBackEnabled &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
         ) {
             registerPredictiveBack()
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        // 用户按 Home 键或切回手机系统桌面时：立即自动开启 Android 系统级画中画小窗播放！
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                val params = PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(16, 9))
+                    .build()
+                enterPictureInPictureMode(params)
+            } catch (_: Exception) {
+                try {
+                    enterPictureInPictureMode()
+                } catch (_: Exception) {}
+            }
         }
     }
 
