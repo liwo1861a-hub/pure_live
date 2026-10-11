@@ -692,12 +692,14 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
     _hideVolumeTimer?.cancel();
     _debounceTimer?.cancel();
     showControllerTimer?.cancel();
+    _stallWatchdogTimer?.cancel();
     _controllerHideDeadlineMs = null;
     _defaultFullscreenTimer = null;
     _controllerTransitionTimer = null;
     _hideVolumeTimer = null;
     _debounceTimer = null;
     showControllerTimer = null;
+    _stallWatchdogTimer = null;
   }
 
   bool get _isDisposed => _status == PlayerStatus.disposed;
@@ -727,6 +729,8 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
         if (_isDisposed) return;
         if (playing) {
           _setStatus(PlayerStatus.playing);
+          _cancelStallWatchdog();
+          _autoRecoveryRetries = 0;
         } else if (_playerManager.hasError.value) {
           _setStatus(PlayerStatus.error);
         }
@@ -735,7 +739,12 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
     _addSubscription(
       _playerManager.onLoading.distinct().listen((loading) {
         if (_isDisposed || _playerManager.hasError.value) return;
-        if (loading) _setStatus(PlayerStatus.loading);
+        if (loading) {
+          _setStatus(PlayerStatus.loading);
+          _startStallWatchdog();
+        } else {
+          _cancelStallWatchdog();
+        }
       }),
     );
   }
@@ -793,6 +802,48 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
     };
 
     ToastUtil.show(errorMessage);
+    // 关键自愈机制：播放器遇错自动安排重试恢复，杜绝黑屏死等手动刷新
+    _scheduleAutoRecovery('player_error');
+  }
+
+  Timer? _stallWatchdogTimer;
+  int _autoRecoveryRetries = 0;
+  DateTime? _lastAutoRecoveryAt;
+
+  void _startStallWatchdog() {
+    _stallWatchdogTimer?.cancel();
+    // 缓冲卡顿超过 3.5 秒未出画面，判定为 CDN/推流断流卡死，自动触发静默重拉自愈！
+    _stallWatchdogTimer = Timer(const Duration(milliseconds: 3500), () {
+      _stallWatchdogTimer = null;
+      if (_isDisposed || _status != PlayerStatus.loading) return;
+      log('Stall watchdog triggered: buffering exceeded 3.5s, auto recovering...', name: 'VideoController');
+      _scheduleAutoRecovery('buffering_stall');
+    });
+  }
+
+  void _cancelStallWatchdog() {
+    _stallWatchdogTimer?.cancel();
+    _stallWatchdogTimer = null;
+  }
+
+  void _scheduleAutoRecovery(String reason) {
+    if (_isDisposed) return;
+    final now = DateTime.now();
+    // 60 秒内重试次数限制，防止无休止死循环
+    if (_lastAutoRecoveryAt != null && now.difference(_lastAutoRecoveryAt!) > const Duration(seconds: 60)) {
+      _autoRecoveryRetries = 0;
+    }
+    if (_autoRecoveryRetries >= 5) {
+      log('Auto recovery rate limit reached (5 attempts in 60s), waiting for manual action', name: 'VideoController');
+      return;
+    }
+    _autoRecoveryRetries++;
+    _lastAutoRecoveryAt = now;
+    log('Auto recovery scheduled ($reason, attempt $_autoRecoveryRetries)...', name: 'VideoController');
+    Future<void>.delayed(const Duration(milliseconds: 600), () {
+      if (_isDisposed) return;
+      unawaited(refresh());
+    });
   }
 
   void initBattery() {
