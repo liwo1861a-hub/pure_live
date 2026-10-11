@@ -239,6 +239,19 @@ final class LivePlayerFacade {
     await setVolume(_openVolumeFor(liveroom));
   }
 
+  Future<void> replay() async {
+    if (_disposed || _room == null || _lastLines.isEmpty) return;
+    final primary = _lastLines.first;
+    await play(
+      primary,
+      _lastLines,
+      _lastHeaders,
+      liveroom: _room,
+      audioOnly: desiredAudioOnlyMode,
+      sourceResolver: _sourceResolver,
+    );
+  }
+
   void _publishCommit(
     String url,
     List<String> uiLines,

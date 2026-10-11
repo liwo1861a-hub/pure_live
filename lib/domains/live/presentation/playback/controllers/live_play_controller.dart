@@ -214,6 +214,11 @@ class LivePlayController extends GetxController
     _wasBackgrounded = false;
     if (!GlobalPlayerService.instance.player.isInPip.value) {
       _restoreDanmakuPresentation();
+      // 关键修复：从后台回到前台时，清空过期 2 秒旧缓存，重新拉取最新推流现场，彻底消除无限卡顿循环！
+      final player = GlobalPlayerService.instance.player;
+      if (player.isPlayingNow) {
+        unawaited(player.replay());
+      }
     }
   }
 
