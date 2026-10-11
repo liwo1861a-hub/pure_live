@@ -1,5 +1,24 @@
 [
   {
+    "version": "3.2.8",
+    "title": "v3.2.8 (画面定格停滞自动自愈终结版)",
+    "date": "2026-10-11",
+    "github": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.8",
+    "author": {
+      "name": "liwo1861a-hub",
+      "profile": "https://github.com/liwo1861a-hub"
+    },
+    "changelog": "# Pure Live v3.2.8 (画面定格停滞自动自愈终结版)\n\n- 彻底解决观看过程中画面直接卡住不动：新增播放器时间戳心跳看门狗 (Playback Freeze Watchdog)，当画面定格停顿超 3~4 秒未前进时，系统自动秒级静默重拉新流自愈，无需手动点击刷新\n- 退出直播间全场景立马自动开启小窗 (软件内应用小窗 + 桌面系统画中画)\n- 修复后台 1 分钟断网暂停与切回前台 2 秒卡顿死循环\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
+    "files": [
+      {
+        "name": "PureLive-3.2.8-android-arm64-v8a.apk",
+        "size": "138.0mb",
+        "downloads": 0,
+        "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.2.8/PureLive-3.2.8-android-arm64-v8a.apk"
+      }
+    ]
+  },
+  {
     "version": "3.2.7",
     "title": "v3.2.7 (全自动看门狗卡顿黑屏自愈版)",
     "date": "2026-10-11",

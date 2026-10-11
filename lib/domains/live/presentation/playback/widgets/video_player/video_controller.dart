@@ -700,6 +700,7 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
     _debounceTimer = null;
     showControllerTimer = null;
     _stallWatchdogTimer = null;
+    _cancelPlaybackFreezeWatchdog();
   }
 
   bool get _isDisposed => _status == PlayerStatus.disposed;
@@ -730,9 +731,13 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
         if (playing) {
           _setStatus(PlayerStatus.playing);
           _cancelStallWatchdog();
+          _startPlaybackFreezeWatchdog();
           _autoRecoveryRetries = 0;
-        } else if (_playerManager.hasError.value) {
-          _setStatus(PlayerStatus.error);
+        } else {
+          _cancelPlaybackFreezeWatchdog();
+          if (_playerManager.hasError.value) {
+            _setStatus(PlayerStatus.error);
+          }
         }
       }),
     );
@@ -741,6 +746,7 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
         if (_isDisposed || _playerManager.hasError.value) return;
         if (loading) {
           _setStatus(PlayerStatus.loading);
+          _cancelPlaybackFreezeWatchdog();
           _startStallWatchdog();
         } else {
           _cancelStallWatchdog();
@@ -824,6 +830,46 @@ class VideoController with ChangeNotifier implements DanmakuSettingsSource, Play
   void _cancelStallWatchdog() {
     _stallWatchdogTimer?.cancel();
     _stallWatchdogTimer = null;
+  }
+
+  Timer? _playbackFreezeWatchdog;
+  Duration _lastPlaybackPosition = Duration.zero;
+  int _consecutiveFrozenSeconds = 0;
+
+  void _startPlaybackFreezeWatchdog() {
+    _playbackFreezeWatchdog?.cancel();
+    _consecutiveFrozenSeconds = 0;
+    _lastPlaybackPosition = Duration.zero;
+
+    // 每 1 秒心跳检测一次播放器时间戳前进状态，彻底检测并消灭“画面卡住不动”的假死定格
+    _playbackFreezeWatchdog = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_isDisposed || _status != PlayerStatus.playing) {
+        _consecutiveFrozenSeconds = 0;
+        return;
+      }
+      final handle = _playerManager.handle;
+      if (handle == null || handle.disposed) return;
+      final currentPos = handle.playback.position;
+
+      // 如果处于播放状态，但时间戳连续 3~4 秒完全没有前进，说明画面定格卡死！
+      if (currentPos == _lastPlaybackPosition) {
+        _consecutiveFrozenSeconds++;
+        if (_consecutiveFrozenSeconds >= 4) {
+          _consecutiveFrozenSeconds = 0;
+          log('Playback freeze detected: position stalled at $currentPos for 4s, auto recovering...', name: 'VideoController');
+          _scheduleAutoRecovery('playback_frozen_stall');
+        }
+      } else {
+        _consecutiveFrozenSeconds = 0;
+        _lastPlaybackPosition = currentPos;
+      }
+    });
+  }
+
+  void _cancelPlaybackFreezeWatchdog() {
+    _playbackFreezeWatchdog?.cancel();
+    _playbackFreezeWatchdog = null;
+    _consecutiveFrozenSeconds = 0;
   }
 
   void _scheduleAutoRecovery(String reason) {
