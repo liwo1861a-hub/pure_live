@@ -244,7 +244,19 @@ class DanmakuListViewState extends State<DanmakuListView> {
       acceptDirectionOnlyUserScroll: PlatformUtils.isDesktop,
       hasActivePointer: _activeScrollPointers > 0,
     )) {
-      _pauseAutoScroll();
+      final position = _scrollController.position;
+      // 只有当用户确实向上滑动查看历史消息（离开底部 > 40px）时才暂停自动跟随
+      if (position.hasContentDimensions && (position.pixels - position.minScrollExtent).abs() > 40) {
+        _pauseAutoScroll();
+      }
+    }
+
+    // 关键优化：当滑动或滚动回到底部区域时，自动恢复实时弹幕滚动跟踪，无需必须手动点击按钮！
+    final position = _scrollController.position;
+    if (position.hasContentDimensions && (position.pixels - position.minScrollExtent).abs() <= 30) {
+      if (!_autoScrollEnabled && _activeScrollPointers == 0) {
+        unawaited(_resumeAutoScroll());
+      }
     }
 
     // Keep the snapshot stable after every deliberate drag, including a drag

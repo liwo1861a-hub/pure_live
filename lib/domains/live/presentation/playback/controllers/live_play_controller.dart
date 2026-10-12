@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:pure_live/core/index.dart';
 import 'package:pure_live/core/utils/event_bus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -202,7 +203,28 @@ class LivePlayController extends GetxController
     _screenKeepOnWorker = ever(SettingsService.to.app.enableScreenKeepOn, (_) => _updateWakelock());
 
     _updateWakelock();
+
+    // 关键优化：监听网络切换（WiFi/移动网络切换），自动静默刷新恢复画面，彻底解决“更换网络后有声音但画面一直黑屏”！
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((results) {
+      if (isClosed || _ownerClosed) return;
+      final isConnected = results.any((r) => r != ConnectivityResult.none);
+      if (isConnected && state.value.room.isLiving) {
+        developer.log('Network change detected, automatically refreshing stream to recover video surface...', name: 'LivePlayController');
+        Future<void>.delayed(const Duration(milliseconds: 800), () {
+          if (!isClosed && !_ownerClosed) {
+            final videoController = state.value.player.videoController;
+            if (videoController != null) {
+              unawaited(videoController.refresh());
+            } else {
+              unawaited(GlobalPlayerService.instance.player.replay());
+            }
+          }
+        });
+      }
+    });
   }
+
+  StreamSubscription? _connectivitySubscription;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
@@ -1230,6 +1252,7 @@ class LivePlayController extends GetxController
     _roomLoadEpoch++;
     _iptvPlaybackEpoch++;
     WidgetsBinding.instance.removeObserver(this);
+    _connectivitySubscription?.cancel();
     _pipStateWorker?.dispose();
     _screenKeepOnWorker?.dispose();
     _danmakuPresentationRecovery.dispose();
