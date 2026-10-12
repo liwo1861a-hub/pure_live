@@ -186,10 +186,8 @@ class DanmakuManager {
   }
 
   void sendDanmaku(LiveMessage msg, bool isPlaying, bool isCompactMode) {
-    // A locally composed message is a UI interaction rather than a packet from
-    // the live transport. Do not silently discard it while playback is still
-    // starting or briefly buffering.
-    if (!isPlaying && !msg.isLocal) return;
+    // 关键修复：移除 !isPlaying 粗暴丢弃弹幕逻辑，杜绝播放器在短暂缓冲或状态抖动时大面积漏弹幕！
+    if (_isDisposed) return;
 
     final originalColor = Color.fromARGB(255, msg.color.r, msg.color.g, msg.color.b);
     final localStyle = msg.isLocal ? msg.style : null;

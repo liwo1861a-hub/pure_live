@@ -4,6 +4,7 @@ import 'package:pure_live/core/player/presentation/player_back_scope.dart';
 import 'package:pure_live/domains/live/presentation/playback/states/ui_state.dart';
 import 'package:pure_live/domains/live/presentation/playback/widgets/keyboard/video_keyboard.dart';
 import 'package:pure_live/domains/live/presentation/playback/widgets/layout/live_play_content.dart';
+import 'package:pure_live/domains/live/presentation/playback/widgets/layout/live_play_video.dart';
 import 'package:pure_live/domains/live/presentation/playback/controllers/live_play_controller.dart';
 
 class LivePlayPage extends GetView<LivePlayController> {
@@ -14,6 +15,16 @@ class LivePlayPage extends GetView<LivePlayController> {
     return Obx(() {
       final manager = GlobalPlayerService.instance.player;
       final isInPip = manager.isInPip.value || manager.isPipPreparing.value;
+
+      // 关键修复：当处于小窗/画中画模式时，100% 只渲染纯净的视频画面，彻底隐藏顶部的设置按钮、标题与聊天栏！
+      if (isInPip) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: SizedBox.expand(
+            child: LivePlayVideo(controller: controller, expandToParent: true),
+          ),
+        );
+      }
 
       final state = controller.state.value;
       final mode = state.ui.screenMode;

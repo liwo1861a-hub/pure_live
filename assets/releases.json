@@ -1,5 +1,24 @@
 [
   {
+    "version": "3.2.9",
+    "title": "v3.2.9 (纯净小窗与全量弹幕终极完美版)",
+    "date": "2026-10-11",
+    "github": "https://github.com/liwo1861a-hub/pure_live/releases/tag/v3.2.9",
+    "author": {
+      "name": "liwo1861a-hub",
+      "profile": "https://github.com/liwo1861a-hub"
+    },
+    "changelog": "# Pure Live v3.2.9 (纯净小窗与全量弹幕终极完美版)\n\n- 彻底解决漏弹幕：移除播放器缓冲与状态波动时的硬编码拦截，确保每条弹幕 100% 完整发射上屏\n- 彻底解决退回桌面小窗误触发：只有真正正在观看直播时才允许触发桌面系统画中画小窗，闲逛或退出时干净退回桌面绝不误弹\n- 彻底解决小窗显示异常：小窗/画中画模式下 100% 纯净全屏展示视频画面，彻底隐藏顶部标题、设置按钮与输入栏\n- 彻底解决观看过程中卡顿黑屏：内置时间戳看门狗，画面定格超 3~4 秒自动静默重拉新流自愈\n- 退出直播间全场景立马自动开启小窗 (软件内应用小窗 + 桌面系统画中画)\n- 修复后台 1 分钟断网暂停与切回前台 2 秒卡顿死循环\n- 修复进入直播点击右下角全屏放大误放大成竖屏的问题 (强制旋转横屏)\n- 下载源明确划分并新增 GitHub 官方源直链：直观提供【⚡ 极速源 (Cloudflare)】与【🌐 GitHub 官方源】双通道\n- 下载超时扩至 15 分钟，修复镜像双重代理嵌套 Bug\n- 强化 Cloudflare Worker 边缘缓存，提升大文件下载速度\n- 全新独立共存版 (包名 com.liwo.purelive，桌面显示“纯粹直播 Pro”)，可与原版 3.1.19 并存双开\n- 永久固化全新专属 100 年商业级签名",
+    "files": [
+      {
+        "name": "PureLive-3.2.9-android-arm64-v8a.apk",
+        "size": "138.0mb",
+        "downloads": 0,
+        "url": "https://gh.lz1861.ccwu.cc/https://github.com/liwo1861a-hub/pure_live/releases/download/v3.2.9/PureLive-3.2.9-android-arm64-v8a.apk"
+      }
+    ]
+  },
+  {
     "version": "3.2.8",
     "title": "v3.2.8 (画面定格停滞自动自愈终结版)",
     "date": "2026-10-11",

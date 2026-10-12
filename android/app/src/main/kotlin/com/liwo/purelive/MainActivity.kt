@@ -51,7 +51,9 @@ class MainActivity : AudioServiceActivity() {
     // Start in Android's dynamic policy. Dart raises the request only around
     // active touch/scroll/transition bursts when the user setting is enabled.
     private var highRefreshRateEnabled = false
+    private var isLivePlaybackActive = false
     private var displayModeChannel: MethodChannel? = null
+    private var backgroundPlaybackChannel: MethodChannel? = null
     private var predictiveBackChannel: MethodChannel? = null
     private var predictiveBackEnabled = false
     private var predictiveBackRegistered = false
@@ -208,19 +210,33 @@ class MainActivity : AudioServiceActivity() {
             }
         }
 
-        MethodChannel(
+        backgroundPlaybackChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             BACKGROUND_PLAYBACK_CHANNEL,
-        ).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "setKeepAlive" -> {
-                    setPlaybackKeepAlive(
-                        call.argument<Boolean>("enabled") ?: false,
-                    )
-                    result.success(null)
-                }
+        ).also { channel ->
+            channel.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "setKeepAlive" -> {
+                        val enabled = call.argument<Boolean>("enabled") ?: false
+                        isLivePlaybackActive = enabled
+                        setPlaybackKeepAlive(enabled)
 
-                else -> result.notImplemented()
+                        // 动态更新 Android 12+ 自动画中画状态：只有真正看直播时才允许手势自动进画中画！
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            try {
+                                val params = PictureInPictureParams.Builder()
+                                    .setAutoEnterEnabled(enabled)
+                                    .setAspectRatio(Rational(16, 9))
+                                    .build()
+                                setPictureInPictureParams(params)
+                            } catch (_: Exception) {}
+                        }
+
+                        result.success(null)
+                    }
+
+                    else -> result.notImplemented()
+                }
             }
         }
 
@@ -397,11 +413,11 @@ class MainActivity : AudioServiceActivity() {
 
         scheduleDisplayModeRefresh(delayMillis = 0)
 
-        // Android 12+ (API 31+): 开启手势上滑回到系统桌面自动无缝进入系统画中画小窗
+        // Android 12+ (API 31+): 只有在播放直播时才开启手势上滑回桌面自动进画中画
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
                 val params = PictureInPictureParams.Builder()
-                    .setAutoEnterEnabled(true)
+                    .setAutoEnterEnabled(isLivePlaybackActive)
                     .setAspectRatio(Rational(16, 9))
                     .build()
                 setPictureInPictureParams(params)
@@ -418,7 +434,10 @@ class MainActivity : AudioServiceActivity() {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        // 用户按 Home 键或切回手机系统桌面时：立即自动开启 Android 系统级画中画小窗播放！
+        // 关键门禁：只有当前真正处于直播播放中时，才允许进入系统画中画小窗！
+        // 如果用户在主页、分类或设置闲逛，绝对不进入小窗，直接退到桌面！
+        if (!isLivePlaybackActive) return
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 val params = PictureInPictureParams.Builder()
@@ -431,6 +450,12 @@ class MainActivity : AudioServiceActivity() {
                 } catch (_: Exception) {}
             }
         }
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        // 实时通知 Flutter 侧画中画状态变化，隐藏顶部标题栏与多余设置控件！
+        backgroundPlaybackChannel?.invokeMethod("onPipModeChanged", mapOf("inPip" to isInPictureInPictureMode))
     }
 
     override fun onStop() {
