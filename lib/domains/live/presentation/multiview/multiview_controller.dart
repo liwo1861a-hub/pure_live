@@ -644,7 +644,7 @@ class MultiviewController extends GetxController {
     await controller.updateConfig(
       controller.config.copyWith(
         layout: mapped,
-        maxCells: newLayout == MultiviewLayout.focus ? maxCellCount : mapped.capacity,
+        maxCells: (newLayout == MultiviewLayout.focus || cells.length > 4) ? maxCellCount : mapped.capacity,
       ),
     );
   }
@@ -653,6 +653,20 @@ class MultiviewController extends GetxController {
     if (!canAddCell) return;
     cells.add(MultiviewCellState.empty(cells.length));
     playingFlags.add(false);
+
+    // 关键修复：视口超过 4 格时动态升级底层 wallController 至 high-capacity 布局并扩容，彻底杜绝超出容量导致的争抢冲突！
+    final wallCtrl = _wall;
+    if (wallCtrl != null) {
+      final targetLayout = cells.length > 4 ? wall.MultiviewLayout.nine : _wallLayout(layout.value);
+      try {
+        await wallCtrl.updateConfig(
+          wallCtrl.config.copyWith(
+            layout: targetLayout,
+            maxCells: maxCellCount,
+          ),
+        );
+      } catch (_) {}
+    }
     cells.refresh();
   }
 
@@ -809,14 +823,19 @@ class MultiviewController extends GetxController {
     try {
       await _wallController.assign(cellIndex, _wallSource(cellIndex, source));
     } catch (error, stackTrace) {
+      final errStr = error.toString();
       developer.log(
-        'MultiviewController: start playback failed for ${targetRoom.platform}/${targetRoom.roomId}',
+        'MultiviewController: start playback failed for ${targetRoom.platform}/${targetRoom.roomId}: $errStr',
         name: 'MultiviewController',
         error: error,
         stackTrace: stackTrace,
       );
+      // 关键容灾：如果属于操作被取代/取消（superseded / cancelled），绝不是致命错误，直接忽略，不报错！
+      if (errStr.contains('superseded') || errStr.contains('OperationCancelledException') || errStr.contains('cancelled')) {
+        return;
+      }
       _sourceContexts.remove(cellIndex);
-      _failCell(cellIndex, MultiviewCellErrorKind.startFailure, error.toString());
+      _failCell(cellIndex, MultiviewCellErrorKind.startFailure, errStr);
       return;
     }
     if (_closed || isClosed) return;
