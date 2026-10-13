@@ -194,6 +194,7 @@ class MultiviewCellState {
   factory MultiviewCellState.empty(int index) => MultiviewCellState(index: index);
 
   MultiviewCellState copyWith({
+    int? index,
     LiveRoom? room,
     bool clearRoom = false,
     MultiviewCellStatus? status,
@@ -214,7 +215,7 @@ class MultiviewCellState {
     bool clearOwnedSource = false,
   }) {
     return MultiviewCellState(
-      index: index,
+      index: index ?? this.index,
       ownedSource: clearQuality || clearOwnedSource ? null : ownedSource ?? (lines == null ? this.ownedSource : null),
       room: clearRoom ? null : (room ?? this.room),
       status: status ?? this.status,

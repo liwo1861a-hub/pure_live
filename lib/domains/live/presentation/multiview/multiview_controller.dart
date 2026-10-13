@@ -831,7 +831,7 @@ class MultiviewController extends GetxController {
     // (or the wall mute) lands. Declare the start level on the source.
     final roomVolume = _volumes[cellIndex] ?? (room == null ? 1.0 : _roomVolumeLoader(room).clamp(0.0, 1.0));
     final holdsAudio =
-        !allMuted.value && (enableMultiAudioMix.value || layout.value != MultiviewLayout.focus || cellIndex == focusedCellIndex.value);
+        !allMuted.value && (!singleAudioMode.value || layout.value != MultiviewLayout.focus || cellIndex == focusedCellIndex.value);
     final metadata = <String, Object?>{
       // 允许各房间独立调节音量大小，多路混音同时出声
       OpenVolume.metadataKey: holdsAudio ? roomVolume : 0.0,

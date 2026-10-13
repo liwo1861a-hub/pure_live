@@ -431,17 +431,17 @@ class _MultiviewPageState extends State<MultiviewPage> {
             );
           }),
           Obx(() {
-            final mixing = controller.enableMultiAudioMix.value;
+            final isSingle = controller.singleAudioMode.value;
             final theme = Theme.of(context);
             return IconButton(
-              tooltip: mixing ? '多路混音 (全部同时出声)' : '单焦点出声',
+              tooltip: isSingle ? '单声音来源模式 (点选切换出声)' : '多房间同时出声 (多路混音)',
               icon: Icon(
-                Remix.sound_module_line,
+                isSingle ? Remix.volume_vibrate_line : Remix.sound_module_line,
                 size: 22,
-                color: mixing ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                color: isSingle ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
               ),
               onPressed: () {
-                controller.enableMultiAudioMix.toggle();
+                controller.singleAudioMode.toggle();
                 unawaited(controller.reapplyAllVolumes());
               },
             );
@@ -929,6 +929,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
       state: state,
       isAudioFocus: controller.audioFocusIndex == index && status == MultiviewCellStatus.playing,
       isPickTarget: _targetCell == index && isMultiviewCellAssignable(status),
+      controller: controller,
       showDanmaku: showDanmaku && status == MultiviewCellStatus.playing && state.videoController != null,
       barrageController: controller.barrageControllerFor(index),
       showQualityEntry: showQualityEntry,
@@ -962,6 +963,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
 class _MultiviewCellView extends StatelessWidget {
   const _MultiviewCellView({
     super.key,
+    required this.controller,
     required this.state,
     required this.isAudioFocus,
     required this.isPickTarget,
@@ -976,6 +978,7 @@ class _MultiviewCellView extends StatelessWidget {
     this.showQualityEntry = false,
   });
 
+  final MultiviewController controller;
   final MultiviewCellState state;
   final bool isAudioFocus;
   final bool isPickTarget;
