@@ -72,31 +72,32 @@ class FloatingPlayback {
     final entry = OverlayEntry(
       builder: (context) {
         final isPortraitSurface = _isPortraitStream();
+        final screenSize = MediaQuery.sizeOf(context);
+        final defaultWidth = (screenSize.width * 0.62).clamp(180.0, 360.0);
+        final defaultHeight = defaultWidth * (9.0 / 16.0);
+        final initialR = _rememberedFloatRect(isPortraitSurface) ??
+            Rect.fromLTWH(
+              (screenSize.width - defaultWidth - 16.0).clamp(0.0, double.infinity),
+              (screenSize.height - defaultHeight - 90.0).clamp(0.0, double.infinity),
+              defaultWidth,
+              defaultHeight,
+            );
         return FloatingWindowOverlay(
           visible: isFloatingVideoVisible.stream,
           initiallyVisible: true,
-          // 160×90 (the library default) is a thumbnail, not a watchable
-          // window: a 16:9 stream gets a 380×214 surface with a 200×112 drag
-          // floor, still capped at half the screen by maxWidthFraction.
-          placement: const FloatingWindowPlacement(
+          placement: FloatingWindowPlacement(
             config: FloatingPlacementConfig(
-              width: 380,
-              height: 214,
-              minWidth: 200,
-              minHeight: 112,
-              // The half-screen cap the library ships with made left/right
-              // resize look broken on a phone: 200 min width on a 400 px surface
-              // left the width clamped to one value. The window may use the
-              // whole surface and is still clamped inside it.
+              width: defaultWidth,
+              height: defaultHeight,
+              minWidth: 160,
+              minHeight: 90,
               maxWidthFraction: 1.0,
-              // Every edge and corner resizes, freely: the viewer picks the
-              // width and the height, and the window keeps what they chose.
               resizableByDrag: true,
               resizeHandles: FloatingResizeHandle.all,
               resizeKeepsAspectRatio: false,
             ),
           ),
-          initialRect: _rememberedFloatRect(isPortraitSurface),
+          initialRect: initialR,
           onRectChanged: (rect) => _rememberFloatRect(isPortraitSurface, rect),
           child: _FloatingSurface(
             facade: facade,

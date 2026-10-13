@@ -51,13 +51,13 @@ class MultiviewController extends GetxController {
        _danmakuEngineFactory = danmakuEngineFactory ?? _defaultDanmakuEngineFactory,
        _roomVolumeLoader = roomVolumeLoader ?? _defaultRoomVolumeLoader,
        _roomVolumeSaver = roomVolumeSaver ?? _defaultRoomVolumeSaver,
-       maxCellCount = maxCellCount ?? (PlatformUtils.isDesktop ? maxCells : MultiviewLayout.focus.capacity) {
-    if (this.maxCellCount < MultiviewLayout.focus.capacity || this.maxCellCount > maxCells) {
-      throw ArgumentError.value(this.maxCellCount, 'maxCellCount', 'must be between 4 and $maxCells');
+       maxCellCount = maxCellCount ?? maxCells {
+    if (this.maxCellCount < 1 || this.maxCellCount > maxCells) {
+      throw ArgumentError.value(this.maxCellCount, 'maxCellCount', 'must be between 1 and $maxCells');
     }
   }
 
-  static const int maxCells = 9;
+  static const int maxCells = 64;
 
   final int maxCellCount;
   final Duration frameStallTimeout;
@@ -224,6 +224,19 @@ class MultiviewController extends GetxController {
   final RxBool allMuted = false.obs;
   final RxBool smallCellsLowQuality = false.obs;
 
+  /// 是否允许多直播间同时播放声音（多路混音模式）
+  final RxBool enableMultiAudioMix = true.obs;
+
+  Future<void> reapplyAllVolumes() async {
+    for (var i = 0; i < cells.length; i++) {
+      final vol = _volumes[i] ?? 1.0;
+      final shouldPlayAudio = !allMuted.value && (enableMultiAudioMix.value || i == _audioFocusIndex.value);
+      try {
+        await _wallController.setCellVolume(i, shouldPlayAudio ? vol : 0.0);
+      } catch (_) {}
+    }
+  }
+
   final RxBool danmakuEnabled = false.obs;
   final BarrageController barrageController = BarrageController();
 
@@ -309,7 +322,7 @@ class MultiviewController extends GetxController {
     return controller.cells[index];
   }
 
-  bool get canAddCell => layout.value == MultiviewLayout.focus && cells.length < maxCellCount;
+  bool get canAddCell => cells.length < maxCellCount;
 
   @override
   void onInit() {
@@ -574,12 +587,7 @@ class MultiviewController extends GetxController {
   }
 
   Future<void> addCell() async {
-    if (layout.value != MultiviewLayout.focus) {
-      throw StateError('multiview: addCell is only available in focus layout');
-    }
-    if (!canAddCell) {
-      throw StateError('multiview: cell limit reached ($maxCellCount)');
-    }
+    if (!canAddCell) return;
     cells.add(MultiviewCellState.empty(cells.length));
     playingFlags.add(false);
   }
@@ -774,11 +782,10 @@ class MultiviewController extends GetxController {
     // (or the wall mute) lands. Declare the start level on the source.
     final roomVolume = _volumes[cellIndex] ?? (room == null ? 1.0 : _roomVolumeLoader(room).clamp(0.0, 1.0));
     final holdsAudio =
-        !allMuted.value && (layout.value != MultiviewLayout.focus || cellIndex == focusedCellIndex.value);
+        !allMuted.value && (enableMultiAudioMix.value || layout.value != MultiviewLayout.focus || cellIndex == focusedCellIndex.value);
     final metadata = <String, Object?>{
-      // 手机端滑杆控制的是系统音量,音频格增益恒定 1.0(与单房间一致,
-      // 否则房间记忆音量会静默减半实际响度);桌面端保留各格记忆音量。
-      OpenVolume.metadataKey: holdsAudio ? (Platform.isAndroid || Platform.isIOS ? 1.0 : roomVolume) : 0.0,
+      // 允许各房间独立调节音量大小，多路混音同时出声
+      OpenVolume.metadataKey: holdsAudio ? roomVolume : 0.0,
       if (owned != null) kMediaKitCustomInputKey: customInputMetadataOf(owned),
     };
     return wall.MultiviewCellSource(
@@ -938,6 +945,9 @@ class MultiviewController extends GetxController {
   Future<void> setAudioFocus(int cellIndex) {
     RangeError.checkValidIndex(cellIndex, cells, 'cellIndex');
     _audioFocusIndex.value = cellIndex;
+    if (enableMultiAudioMix.value) {
+      return reapplyAllVolumes();
+    }
     return _wallController.setAudioFocus(cellIndex);
   }
 

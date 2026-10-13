@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/services.dart';
@@ -430,6 +430,30 @@ class _MultiviewPageState extends State<MultiviewPage> {
               onPressed: controller.toggleMuteAll,
             );
           }),
+          Obx(() {
+            final mixing = controller.enableMultiAudioMix.value;
+            final theme = Theme.of(context);
+            return IconButton(
+              tooltip: mixing ? '多路混音 (全部同时出声)' : '单焦点出声',
+              icon: Icon(
+                Remix.sound_module_line,
+                size: 22,
+                color: mixing ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+              ),
+              onPressed: () {
+                controller.enableMultiAudioMix.toggle();
+                unawaited(controller.reapplyAllVolumes());
+              },
+            );
+          }),
+          Obx(() {
+            final canAdd = controller.canAddCell;
+            return IconButton(
+              tooltip: '添加直播视口 (自动排版)',
+              icon: const Icon(Remix.add_box_line, size: 22),
+              onPressed: canAdd ? () => unawaited(controller.addCell()) : null,
+            );
+          }),
           // The selected room volume is available in every layout. In focus
           // mode the selected room is the large cell; in grid layouts it is
           // the cell carrying audio focus.
@@ -519,28 +543,56 @@ class _MultiviewPageState extends State<MultiviewPage> {
       if (layout != MultiviewLayout.focus) controller.setVisibleFocusSmallCells(const []);
       final content = layout == MultiviewLayout.focus
           ? _buildFocusLayout(cells, focused: focused, isWide: isWide, danmakuEnabled: danmakuEnabled)
-          : Column(
-              children: [
-                for (var row = 0; row < layout.rows; row++)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        for (var col = 0; col < layout.columns; col++)
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(3),
-                              child: _buildCellAt(
-                                cells,
-                                row * layout.columns + col,
-                                isWide: isWide,
-                                showDanmaku: danmakuEnabled && row * layout.columns + col == audioFocus,
+          : Builder(
+              builder: (context) {
+                final total = cells.length;
+                int cols;
+                if (total <= 1) {
+                  cols = 1;
+                } else if (total == 2) {
+                  cols = isWide ? 2 : 1;
+                } else if (total <= 4) {
+                  cols = 2;
+                } else if (total <= 6) {
+                  cols = isWide ? 3 : 2;
+                } else if (total <= 9) {
+                  cols = 3;
+                } else {
+                  cols = isWide ? 4 : 3;
+                }
+                final rows = (total / cols).ceil().clamp(1, 999);
+                return Column(
+                  children: [
+                    for (var r = 0; r < rows; r++)
+                      Expanded(
+                        child: Row(
+                          children: [
+                            for (var c = 0; c < cols; c++)
+                              Expanded(
+                                child: Builder(
+                                  builder: (ctx) {
+                                    final idx = r * cols + c;
+                                    if (idx < total) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(3),
+                                        child: _buildCellAt(
+                                          cells,
+                                          idx,
+                                          isWide: isWide,
+                                          showDanmaku: danmakuEnabled && idx == audioFocus,
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
                               ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-              ],
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
             );
       return Padding(padding: const EdgeInsets.all(6), child: content);
     });
@@ -732,51 +784,99 @@ class _MultiviewPageState extends State<MultiviewPage> {
   }
 
   void _showVolumeSheet(int cellIndex) {
-    var value = controller.cellVolume(cellIndex);
-    final room = controller.cells[cellIndex].room;
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (sheetContext) => StatefulBuilder(
         builder: (sheetContext, setSheetState) => SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text(
-                        room?.nick?.trim().isNotEmpty == true ? room!.nick! : i18n('multiview_volume'),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(sheetContext).textTheme.titleMedium,
-                      ),
+                    Text(
+                      '多视口独立调音台',
+                      style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    Text('${(value * 100).round()}%'),
+                    Row(
+                      children: [
+                        Text('多房间同时发声', style: Theme.of(sheetContext).textTheme.bodySmall),
+                        const SizedBox(width: 4),
+                        Switch(
+                          value: controller.enableMultiAudioMix.value,
+                          onChanged: (val) {
+                            setSheetState(() => controller.enableMultiAudioMix.value = val);
+                            unawaited(controller.reapplyAllVolumes());
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Remix.volume_down_line),
-                    Expanded(
-                      child: Slider(
-                        value: value,
-                        onChanged: (v) {
-                          setSheetState(() => value = v);
-                          unawaited(controller.setCellVolume(cellIndex, v));
-                        },
-                      ),
-                    ),
-                    const Icon(Remix.volume_up_line),
-                  ],
-                ),
-                Text(
-                  i18n('room_volume'),
-                  style: Theme.of(sheetContext).textTheme.bodySmall
-                      ?.copyWith(color: Theme.of(sheetContext).colorScheme.onSurfaceVariant),
+                const Divider(),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.45,
+                  ),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: controller.cells.length,
+                    itemBuilder: (ctx, idx) {
+                      final cell = controller.cells[idx];
+                      if (cell.room == null) return const SizedBox.shrink();
+                      var vol = controller.cellVolume(idx);
+                      final isFocused = idx == controller.audioFocusIndexState.value;
+                      final roomName = cell.room?.nick?.trim().isNotEmpty == true
+                          ? cell.room!.nick!
+                          : '视口 ${idx + 1}';
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 80,
+                              child: Text(
+                                roomName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: isFocused ? FontWeight.bold : FontWeight.normal,
+                                  color: isFocused ? Theme.of(sheetContext).colorScheme.primary : null,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              iconSize: 20,
+                              icon: Icon(vol == 0 ? Remix.volume_mute_line : Remix.volume_up_line),
+                              onPressed: () {
+                                final next = vol == 0 ? 0.8 : 0.0;
+                                setSheetState(() => vol = next);
+                                unawaited(controller.setCellVolume(idx, next));
+                              },
+                            ),
+                            Expanded(
+                              child: Slider(
+                                value: vol,
+                                onChanged: (v) {
+                                  setSheetState(() => vol = v);
+                                  unawaited(controller.setCellVolume(idx, v));
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: 38,
+                              child: Text('${(vol * 100).round()}%', style: const TextStyle(fontSize: 12)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
