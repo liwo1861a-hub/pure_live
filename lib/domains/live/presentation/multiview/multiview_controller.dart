@@ -1069,6 +1069,8 @@ class MultiviewController extends GetxController {
     if (_closed || isClosed) return;
     if (cellIndex >= cells.length) return;
     cells[cellIndex] = state;
+    // 关键修复：每次视口状态或控制器变动，立即触发 RxList 刷新通知，杜绝界面重绘滞后必须操作下一个才显示的死穴！
+    cells.refresh();
   }
 
   @override

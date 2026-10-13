@@ -69,6 +69,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
   int _targetCell = 0;
 
   Worker? _layoutWorker;
+  Worker? _cellsWorker;
 
   final Map<int, GlobalKey> _cellKeys = {};
 
@@ -81,6 +82,10 @@ class _MultiviewPageState extends State<MultiviewPage> {
     super.initState();
     _targetCell = _firstAssignableCell();
     _layoutWorker = ever<MultiviewLayout>(controller.layout, (_) => _clampTargetCell());
+    // 关键优化：监听 cells 响应式状态流，有任何变动即刻触发界面重绘，彻底根除必须操作下一个才能显示的延迟死穴！
+    _cellsWorker = ever(controller.cells, (_) {
+      if (mounted) setState(() {});
+    });
     _focusRailScrollController.addListener(_syncFocusRailVisibility);
     HardwareKeyboard.instance.addHandler(_handleGlobalKeyEvent);
   }
@@ -89,6 +94,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleGlobalKeyEvent);
     _layoutWorker?.dispose();
+    _cellsWorker?.dispose();
     _focusRailScrollController.removeListener(_syncFocusRailVisibility);
     _focusRailScrollController.dispose();
     if (Get.isRegistered<MultiviewController>()) controller.setVisibleFocusSmallCells(const []);
@@ -192,7 +198,8 @@ class _MultiviewPageState extends State<MultiviewPage> {
           cellIndex: cellIndex,
           onPicked: (room) {
             Navigator.of(sheetContext).pop();
-            _pickRoom(room);
+            unawaited(controller.assignRoom(cellIndex, room));
+            if (mounted) setState(() {});
           },
         ),
       ),
