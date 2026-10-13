@@ -956,6 +956,10 @@ class _MultiviewPageState extends State<MultiviewPage> {
       },
       onLongPress: status == MultiviewCellStatus.playing ? () => _showCellActions(state) : null,
       onRetry: () => _retryCell(state),
+      onDelete: () async {
+        await controller.deleteCell(index);
+        if (mounted) setState(() {});
+      },
     );
   }
 }
@@ -976,6 +980,7 @@ class _MultiviewCellView extends StatelessWidget {
     required this.onRenderResize,
     this.showDanmaku = false,
     this.showQualityEntry = false,
+    this.onDelete,
   });
 
   final MultiviewController controller;
@@ -985,6 +990,7 @@ class _MultiviewCellView extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
   final VoidCallback onRetry;
+  final VoidCallback? onDelete;
 
   final bool showDanmaku;
   final BarrageController barrageController;
@@ -1030,7 +1036,7 @@ class _MultiviewCellView extends StatelessWidget {
                 child: IconButton(
                   tooltip: '删除此视口',
                   icon: const Icon(Remix.close_circle_fill, size: 24, color: Colors.redAccent),
-                  onPressed: () => unawaited(controller.deleteCell(cellIndex)),
+                  onPressed: onDelete,
                 ),
               ),
             ),

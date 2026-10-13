@@ -541,10 +541,14 @@ class MultiviewController extends GetxController {
       var playing = wallCell.isPlaying;
       switch (status) {
         case MultiviewCellStatus.playing:
+          final vc = _wallVideo(index);
           _updateCell(
             index,
-            cells[index].copyWith(status: status, clearError: true, videoController: _wallVideo(index)),
+            cells[index].copyWith(status: status, clearError: true, videoController: vc),
           );
+          final vol = _volumes[index] ?? 1.0;
+          final shouldPlayAudio = !allMuted.value && (!singleAudioMode.value || index == _audioFocusIndex.value);
+          unawaited(_applyNativeVolume(index, shouldPlayAudio ? vol : 0.0));
         case MultiviewCellStatus.resolving:
           if (cells[index].status == MultiviewCellStatus.empty) continue;
           _updateCell(index, cells[index].copyWith(status: status));
@@ -1015,6 +1019,9 @@ class MultiviewController extends GetxController {
   Future<void> setAudioFocus(int cellIndex) async {
     RangeError.checkValidIndex(cellIndex, cells, 'cellIndex');
     _audioFocusIndex.value = cellIndex;
+    try {
+      await _wallController.setAudioFocus(cellIndex);
+    } catch (_) {}
     await reapplyAllVolumes();
   }
 

@@ -72,10 +72,11 @@ class _MultiviewRoomPickerState extends State<MultiviewRoomPicker> {
           if (platform == null || roomId == null) return room;
           final key = '${platform}_$roomId';
           final latestStatus = _historyLiveStatusMap[key];
-          // 如果尚未查回最新状态，由于是历史观看记录，不默认显示为 live，而是 unknown；一旦查回，精准同步
-          return latestStatus != null
-              ? room.copyWith(liveStatus: latestStatus)
-              : room.copyWith(liveStatus: LiveStatus.unknown);
+          final isLive = latestStatus == LiveStatus.live;
+          return room.copyWith(
+            status: isLive,
+            liveStatus: latestStatus ?? LiveStatus.offline,
+          );
         }).toList(),
     };
 
