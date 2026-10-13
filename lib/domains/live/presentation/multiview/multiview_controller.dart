@@ -224,15 +224,29 @@ class MultiviewController extends GetxController {
   final RxBool allMuted = false.obs;
   final RxBool smallCellsLowQuality = false.obs;
 
-  /// 是否允许多直播间同时播放声音（多路混音模式）
-  final RxBool enableMultiAudioMix = true.obs;
+  /// 单声音来源模式开关（true: 只有当前选中的视口出声; false: 多房间同时发声混音）
+  final RxBool singleAudioMode = false.obs;
+
+  Future<void> _applyNativeVolume(int cellIndex, double volume) async {
+    final wallCell = wallCellAt(cellIndex);
+    final playerId = wallCell?.playerId;
+    if (playerId != null) {
+      final handle = PlayerKernelService.instance.kernel.get(mc.PlayerId(playerId));
+      if (handle != null && !handle.disposed) {
+        // media_kit 底层音量范围为 0.0 ~ 100.0，直接穿透硬件级控制！
+        await handle.setVolume(volume * 100.0);
+      }
+    }
+  }
 
   Future<void> reapplyAllVolumes() async {
     for (var i = 0; i < cells.length; i++) {
       final vol = _volumes[i] ?? 1.0;
-      final shouldPlayAudio = !allMuted.value && (enableMultiAudioMix.value || i == _audioFocusIndex.value);
+      final shouldPlayAudio = !allMuted.value && (!singleAudioMode.value || i == _audioFocusIndex.value);
+      final finalVol = shouldPlayAudio ? vol : 0.0;
       try {
-        await _wallController.setCellVolume(i, shouldPlayAudio ? vol : 0.0);
+        await _applyNativeVolume(i, finalVol);
+        await _wallController.setCellVolume(i, finalVol);
       } catch (_) {}
     }
   }
@@ -621,6 +635,7 @@ class MultiviewController extends GetxController {
     if (!canAddCell) return;
     cells.add(MultiviewCellState.empty(cells.length));
     playingFlags.add(false);
+    cells.refresh();
   }
 
   Future<void> promoteCell(int cellIndex) async {
@@ -952,7 +967,14 @@ class MultiviewController extends GetxController {
     RangeError.checkValidIndex(cellIndex, cells, 'cellIndex');
     final resolved = volume.clamp(0.0, 1.0).toDouble();
     _volumes[cellIndex] = resolved;
-    await _wallController.setCellVolume(cellIndex, resolved);
+
+    final shouldPlayAudio = !allMuted.value && (!singleAudioMode.value || cellIndex == _audioFocusIndex.value);
+    final finalVol = shouldPlayAudio ? resolved : 0.0;
+    try {
+      await _applyNativeVolume(cellIndex, finalVol);
+      await _wallController.setCellVolume(cellIndex, finalVol);
+    } catch (_) {}
+
     final room = cells[cellIndex].room;
     if (room == null) return;
     try {
@@ -976,13 +998,37 @@ class MultiviewController extends GetxController {
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
 
-  Future<void> setAudioFocus(int cellIndex) {
+  Future<void> setAudioFocus(int cellIndex) async {
     RangeError.checkValidIndex(cellIndex, cells, 'cellIndex');
     _audioFocusIndex.value = cellIndex;
-    if (enableMultiAudioMix.value) {
-      return reapplyAllVolumes();
+    await reapplyAllVolumes();
+  }
+
+  Future<void> deleteCell(int cellIndex) async {
+    RangeError.checkValidIndex(cellIndex, cells, 'cellIndex');
+    _cancelDiscovery(cellIndex);
+    _sourceContexts.remove(cellIndex);
+    _volumes.remove(cellIndex);
+    final removedSession = _cellDanmakuSessions.remove(cellIndex);
+    unawaited(removedSession?.disconnect());
+    _cellBarrageControllers[cellIndex]?.clear();
+    await _wall?.clear(cellIndex);
+
+    cells.removeAt(cellIndex);
+    if (cellIndex < playingFlags.length) {
+      playingFlags.removeAt(cellIndex);
     }
-    return _wallController.setAudioFocus(cellIndex);
+    for (var i = 0; i < cells.length; i++) {
+      cells[i] = cells[i].copyWith(index: i);
+    }
+    if (_audioFocusIndex.value >= cells.length) {
+      _audioFocusIndex.value = (cells.length - 1).clamp(0, 999);
+    }
+    if (focusedCellIndex.value >= cells.length) {
+      focusedCellIndex.value = (cells.length - 1).clamp(0, 999);
+    }
+    cells.refresh();
+    unawaited(_syncDanmakuSession());
   }
 
   Future<void> toggleMuteAll() {

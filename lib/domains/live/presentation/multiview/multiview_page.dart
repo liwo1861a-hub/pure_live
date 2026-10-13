@@ -451,7 +451,12 @@ class _MultiviewPageState extends State<MultiviewPage> {
             return IconButton(
               tooltip: '添加直播视口 (自动排版)',
               icon: const Icon(Remix.add_box_line, size: 22),
-              onPressed: canAdd ? () => unawaited(controller.addCell()) : null,
+              onPressed: canAdd
+                  ? () async {
+                      await controller.addCell();
+                      setState(() {});
+                    }
+                  : null,
             );
           }),
           // The selected room volume is available in every layout. In focus
@@ -804,12 +809,15 @@ class _MultiviewPageState extends State<MultiviewPage> {
                     ),
                     Row(
                       children: [
-                        Text('多房间同时发声', style: Theme.of(sheetContext).textTheme.bodySmall),
+                        Text(
+                          controller.singleAudioMode.value ? '单声音来源 (点选出声)' : '多房间同时出声 (混音)',
+                          style: Theme.of(sheetContext).textTheme.bodySmall,
+                        ),
                         const SizedBox(width: 4),
                         Switch(
-                          value: controller.enableMultiAudioMix.value,
+                          value: controller.singleAudioMode.value,
                           onChanged: (val) {
-                            setSheetState(() => controller.enableMultiAudioMix.value = val);
+                            setSheetState(() => controller.singleAudioMode.value = val);
                             unawaited(controller.reapplyAllVolumes());
                           },
                         ),
@@ -1043,10 +1051,21 @@ class _MultiviewCellView extends StatelessWidget {
             left: 8,
             right: 8,
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _RoomNameChip(state: state),
-                if (isAudioFocus) ...[const SizedBox(width: 6), const _AudioFocusBadge()],
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _RoomNameChip(state: state),
+                    if (isAudioFocus) ...[const SizedBox(width: 6), const _AudioFocusBadge()],
+                  ],
+                ),
+                if (controller.cells.length > 1)
+                  IconButton(
+                    tooltip: '删除此视口',
+                    icon: const Icon(Remix.close_circle_line, size: 20, color: Colors.white70),
+                    onPressed: () => unawaited(controller.deleteCell(cellIndex)),
+                  ),
               ],
             ),
           ),
@@ -1059,7 +1078,7 @@ class _MultiviewCellView extends StatelessWidget {
       MultiviewCellStatus.resolving => _buildResolvingContent(),
       MultiviewCellStatus.offline => _buildOfflineContent(theme),
       MultiviewCellStatus.error => _buildErrorContent(theme),
-      MultiviewCellStatus.playing => const SizedBox.shrink(),
+      MultiviewCellStatus.playing => _buildResolvingContent(),
     };
   }
 
@@ -1120,23 +1139,37 @@ class _MultiviewCellView extends StatelessWidget {
   }
 
   Widget _buildEmptyContent(ThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-            ),
-            child: Icon(Remix.add_circle_line, size: 26, color: theme.colorScheme.onSurfaceVariant),
+    return Stack(
+      children: [
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                ),
+                child: Icon(Remix.add_circle_line, size: 26, color: theme.colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 12),
+              Text(i18n('multiview_empty_cell_hint'), style: AppTextStyles.t14Medium),
+            ],
           ),
-          const SizedBox(height: 12),
-          Text(i18n('multiview_empty_cell_hint'), style: AppTextStyles.t14Medium),
-        ],
-      ),
+        ),
+        if (controller.cells.length > 1)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              tooltip: '删除此空白视口',
+              icon: const Icon(Remix.close_circle_line, size: 20),
+              onPressed: () => unawaited(controller.deleteCell(cellIndex)),
+            ),
+          ),
+      ],
     );
   }
 

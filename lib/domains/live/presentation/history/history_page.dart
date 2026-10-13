@@ -20,6 +20,15 @@ class _HistoryPageState extends State<HistoryPage> {
   bool _historyMutationBusy = false;
 
   @override
+  void initState() {
+    super.initState();
+    // 关键修复：进入历史记录页面后自动静默更新每个主播最新真实开播状态，杜绝永久显示“直播中”！
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) onRefresh();
+    });
+  }
+
+  @override
   void dispose() {
     refreshController.dispose();
     super.dispose();
