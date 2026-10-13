@@ -38,11 +38,45 @@ class MultiviewRoomPicker extends StatefulWidget {
 class _MultiviewRoomPickerState extends State<MultiviewRoomPicker> {
   _PickerSource _source = _PickerSource.favorites;
   String _query = '';
+  final Map<String, LiveStatus> _historyLiveStatusMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshHistoryLiveStatuses();
+  }
+
+  void _refreshHistoryLiveStatuses() {
+    final historyList = HistoryController.to.historyRooms.v;
+    for (final room in historyList.take(30)) {
+      final platform = room.platform;
+      final roomId = room.roomId;
+      if (platform == null || roomId == null || !Sites.isSupported(platform)) continue;
+      final key = '${platform}_$roomId';
+      Sites.of(platform).liveSite.getRoomDetail(room).then((detail) {
+        if (mounted) {
+          setState(() {
+            _historyLiveStatusMap[key] = detail.effectiveLiveStatus;
+          });
+        }
+      }).catchError((_) {});
+    }
+  }
 
   List<LiveRoom> _roomsFor(_PickerSource source) {
     final raw = switch (source) {
       _PickerSource.favorites => FavoriteRoomController.to.favoriteRooms.v,
-      _PickerSource.history => HistoryController.to.historyRooms.v,
+      _PickerSource.history => HistoryController.to.historyRooms.v.map((room) {
+          final platform = room.platform;
+          final roomId = room.roomId;
+          if (platform == null || roomId == null) return room;
+          final key = '${platform}_$roomId';
+          final latestStatus = _historyLiveStatusMap[key];
+          // 如果尚未查回最新状态，由于是历史观看记录，不默认显示为 live，而是 unknown；一旦查回，精准同步
+          return latestStatus != null
+              ? room.copyWith(liveStatus: latestStatus)
+              : room.copyWith(liveStatus: LiveStatus.unknown);
+        }).toList(),
     };
 
     final query = _query.trim().toLowerCase();

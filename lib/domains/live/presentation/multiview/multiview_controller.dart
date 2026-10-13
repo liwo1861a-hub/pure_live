@@ -228,13 +228,27 @@ class MultiviewController extends GetxController {
   final RxBool singleAudioMode = false.obs;
 
   Future<void> _applyNativeVolume(int cellIndex, double volume) async {
+    final targetVol = volume * 100.0;
+    if (cellIndex < cells.length) {
+      final vc = cells[cellIndex].videoController;
+      if (vc != null) {
+        try {
+          await vc.player.setVolume(targetVol);
+        } catch (_) {}
+      }
+    }
     final wallCell = wallCellAt(cellIndex);
     final playerId = wallCell?.playerId;
     if (playerId != null) {
       final handle = PlayerKernelService.instance.kernel.get(mc.PlayerId(playerId));
       if (handle != null && !handle.disposed) {
-        // media_kit 底层音量范围为 0.0 ~ 100.0，直接穿透硬件级控制！
-        await handle.setVolume(volume * 100.0);
+        try {
+          await handle.setVolume(targetVol);
+          final adapter = handle.adapter;
+          if (adapter is MediaKitPlayerAdapter) {
+            await adapter.player.setVolume(targetVol);
+          }
+        } catch (_) {}
       }
     }
   }
