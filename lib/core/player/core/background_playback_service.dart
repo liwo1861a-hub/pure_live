@@ -33,6 +33,14 @@ class BackgroundPlaybackService {
     await _keepAliveTransitions.submit(enabled);
   }
 
+  static Future<void> setPipAutoEnter(bool enabled) async {
+    ensureInitialized();
+    if (!Platform.isAndroid) return;
+    try {
+      await _channel.invokeMethod<void>('setPipAutoEnter', {'enabled': enabled});
+    } catch (_) {}
+  }
+
   static Future<void> _applyKeepAlive(bool enabled) async {
     if (_appliedKeepAlive == enabled) return;
     try {

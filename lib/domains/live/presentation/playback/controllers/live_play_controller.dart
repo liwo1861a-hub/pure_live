@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:pure_live/core/player/core/background_playback_service.dart';
 import 'package:pure_live/core/index.dart';
 import 'package:pure_live/core/utils/event_bus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -1252,6 +1253,7 @@ class LivePlayController extends GetxController
     _roomLoadEpoch++;
     _iptvPlaybackEpoch++;
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(BackgroundPlaybackService.setPipAutoEnter(false));
     _connectivitySubscription?.cancel();
     _pipStateWorker?.dispose();
     _screenKeepOnWorker?.dispose();

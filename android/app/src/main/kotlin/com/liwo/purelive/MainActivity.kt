@@ -218,10 +218,13 @@ class MainActivity : AudioServiceActivity() {
                 when (call.method) {
                     "setKeepAlive" -> {
                         val enabled = call.argument<Boolean>("enabled") ?: false
-                        isLivePlaybackActive = enabled
                         setPlaybackKeepAlive(enabled)
+                        result.success(null)
+                    }
 
-                        // 动态更新 Android 12+ 自动画中画状态：只有真正看直播时才允许手势自动进画中画！
+                    "setPipAutoEnter" -> {
+                        val enabled = call.argument<Boolean>("enabled") ?: false
+                        isLivePlaybackActive = enabled
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             try {
                                 val params = PictureInPictureParams.Builder()
@@ -231,7 +234,6 @@ class MainActivity : AudioServiceActivity() {
                                 setPictureInPictureParams(params)
                             } catch (_: Exception) {}
                         }
-
                         result.success(null)
                     }
 

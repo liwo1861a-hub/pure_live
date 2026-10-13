@@ -7,6 +7,7 @@ import 'package:pure_live/core/platform/platform_utils.dart';
 import 'package:pure_live/domains/live/domain/live_player_facade.dart';
 import 'package:pure_live/core/player/kernel/floating_handle_keeper.dart';
 import 'package:pure_live/core/player/kernel/player_kernel_service.dart';
+import 'package:pure_live/core/player/core/background_playback_service.dart';
 import 'package:pure_live/core/player/presentation/fullscreen_window.dart' show WindowService;
 import 'package:pure_live/domains/live/presentation/playback/controllers/live_play_controller.dart';
 import 'package:pure_live/domains/live/presentation/playback/widgets/layout/live_play_video.dart' show shouldFloatAfterLivePlayExit;
@@ -47,6 +48,8 @@ class LiveRouteObserver extends RouteObserver<PageRoute<dynamic>> {
     final playerManager = GlobalPlayerService.instance.player;
     playerManager.setVideoPresentationVisible(true);
     unawaited(playerManager.closeAppFloating());
+    // 关键门禁：只有进入直播间观看直播时，才允许切桌面进入系统小窗！
+    unawaited(BackgroundPlaybackService.setPipAutoEnter(true));
     // A recording handed to the small window is taken back: two videos cannot
     // share the surface (or the audio). Reclaiming also closes the window
     // itself, not just the player behind it.
@@ -60,11 +63,13 @@ class LiveRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   /// owns it — the window included, so the new page is not covered by a window
   /// whose player was just disposed.
   void _onLocalVideoPlayerEnter() {
+    unawaited(BackgroundPlaybackService.setPipAutoEnter(false));
     unawaited(GlobalPlayerService.instance.player.closeAppFloating());
     unawaited(FloatingHandleKeeper.reclaimCurrent(PlayerKernelService.instance.kernel));
   }
 
   void _onMultiviewEnter() {
+    unawaited(BackgroundPlaybackService.setPipAutoEnter(false));
     final playerManager = GlobalPlayerService.instance.player;
     unawaited(playerManager.closeAppFloating());
     unawaited(playerManager.close());
@@ -75,6 +80,8 @@ class LiveRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   }
 
   void _onLivePlayExit(Route<dynamic> route) {
+    // 关键门禁：退出直播间时，立即关闭切桌面进入系统小窗权限，防止在主页、分类、设置等页面误触发小窗！
+    unawaited(BackgroundPlaybackService.setPipAutoEnter(false));
     final controller = _findLivePlayController();
     if (controller == null) return;
 
