@@ -1030,29 +1030,15 @@ class MultiviewController extends GetxController {
 
   Future<void> deleteCell(int cellIndex) async {
     RangeError.checkValidIndex(cellIndex, cells, 'cellIndex');
-    _cancelDiscovery(cellIndex);
-    _sourceContexts.remove(cellIndex);
-    _volumes.remove(cellIndex);
-    final removedSession = _cellDanmakuSessions.remove(cellIndex);
-    unawaited(removedSession?.disconnect());
-    _cellBarrageControllers[cellIndex]?.clear();
-    await _wall?.clear(cellIndex);
+    // 关键修复：关闭视口时调用标准清空，该槽位优雅变回空白选台卡片，后续格子的底层硬件槽位保持不变，杜绝错位与画面失效！
+    removeCell(cellIndex);
 
-    cells.removeAt(cellIndex);
-    if (cellIndex < playingFlags.length) {
-      playingFlags.removeAt(cellIndex);
+    // 如果是末尾多余的空白视口且超过基础容量，则安全从末尾缩容
+    if (cellIndex == cells.length - 1 && cells.length > layout.value.capacity) {
+      cells.removeLast();
+      if (playingFlags.isNotEmpty) playingFlags.removeLast();
+      cells.refresh();
     }
-    for (var i = 0; i < cells.length; i++) {
-      cells[i] = cells[i].copyWith(index: i);
-    }
-    if (_audioFocusIndex.value >= cells.length) {
-      _audioFocusIndex.value = (cells.length - 1).clamp(0, 999);
-    }
-    if (focusedCellIndex.value >= cells.length) {
-      focusedCellIndex.value = (cells.length - 1).clamp(0, 999);
-    }
-    cells.refresh();
-    unawaited(_syncDanmakuSession());
   }
 
   Future<void> toggleMuteAll() {
