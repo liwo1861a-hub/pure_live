@@ -820,22 +820,6 @@ class MultiviewController extends GetxController {
       return;
     }
     if (_closed || isClosed) return;
-
-    try {
-      await _wallController.setCellVolume(cellIndex, roomVolume);
-    } catch (error, stackTrace) {
-      developer.log(
-        'MultiviewController: restore room volume failed',
-        name: 'MultiviewController',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-
-    final shouldTakeAudioFocus = layout.value != MultiviewLayout.focus || cellIndex == focusedCellIndex.value;
-    if (shouldTakeAudioFocus) {
-      await setAudioFocus(cellIndex);
-    }
     unawaited(_syncDanmakuSession());
   }
 
