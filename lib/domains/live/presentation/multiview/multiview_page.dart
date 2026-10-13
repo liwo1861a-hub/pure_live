@@ -579,7 +579,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
                                           cells,
                                           idx,
                                           isWide: isWide,
-                                          showDanmaku: danmakuEnabled && idx == audioFocus,
+                                          showDanmaku: danmakuEnabled,
                                         ),
                                       );
                                     }
@@ -651,7 +651,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
                         height: extent,
                         child: Padding(
                           padding: const EdgeInsets.all(3),
-                          child: _buildCellAt(cells, index, isWide: isWide),
+                          child: _buildCellAt(cells, index, isWide: isWide, showDanmaku: danmakuEnabled),
                         ),
                       ),
                     if (canAdd)
@@ -922,7 +922,7 @@ class _MultiviewPageState extends State<MultiviewPage> {
       isAudioFocus: controller.audioFocusIndex == index && status == MultiviewCellStatus.playing,
       isPickTarget: _targetCell == index && isMultiviewCellAssignable(status),
       showDanmaku: showDanmaku && status == MultiviewCellStatus.playing && state.videoController != null,
-      barrageController: controller.barrageController,
+      barrageController: controller.barrageControllerFor(index),
       showQualityEntry: showQualityEntry,
       onSelectQuality: (qualityIndex) => unawaited(controller.setCellQuality(index, qualityIndex)),
       onTap: () {

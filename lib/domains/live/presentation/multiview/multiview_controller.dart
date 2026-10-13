@@ -239,6 +239,12 @@ class MultiviewController extends GetxController {
 
   final RxBool danmakuEnabled = false.obs;
   final BarrageController barrageController = BarrageController();
+  final Map<int, MultiviewDanmakuSession> _cellDanmakuSessions = {};
+  final Map<int, BarrageController> _cellBarrageControllers = {};
+
+  BarrageController barrageControllerFor(int index) {
+    return _cellBarrageControllers.putIfAbsent(index, () => BarrageController());
+  }
 
   final MultiviewStreamResolver? _streamResolver;
   final Site Function(String) _siteFor;
@@ -377,37 +383,62 @@ class MultiviewController extends GetxController {
   Future<void> _syncDanmakuSession() async {
     final token = ++_danmakuSyncEpoch;
     try {
-      final room = danmakuEnabled.value && cells.isNotEmpty ? cells[_selectedCellIndex].room : null;
-      final platform = room?.platform;
-      if (room == null || platform == null || !MultiviewDanmakuSession.isSupportedPlatform(platform)) {
-        _retargetDanmakuLayer(null);
-        await _danmakuSession.disconnect();
-        _danmakuResyncAttempts = 0;
+      if (!danmakuEnabled.value) {
+        for (final session in _cellDanmakuSessions.values) {
+          unawaited(session.disconnect());
+        }
+        for (final barrage in _cellBarrageControllers.values) {
+          barrage.clear();
+        }
+        barrageController.clear();
         return;
       }
-      final ready = await _danmakuReadyRoom(room);
-      if (token != _danmakuSyncEpoch) return;
-      if (!MultiviewDanmakuSession.supportsRoom(ready)) {
-        _retargetDanmakuLayer(null);
-        await _danmakuSession.disconnect();
-        _scheduleDanmakuResync(token);
-        return;
+
+      // 关键优化：支持多视口所有直播间全部同步弹幕连接与显示！
+      for (var i = 0; i < cells.length; i++) {
+        final cell = cells[i];
+        final room = cell.room;
+        final platform = room?.platform;
+        if (room == null ||
+            platform == null ||
+            cell.status != MultiviewCellStatus.playing ||
+            !MultiviewDanmakuSession.isSupportedPlatform(platform)) {
+          final existing = _cellDanmakuSessions.remove(i);
+          unawaited(existing?.disconnect());
+          _cellBarrageControllers[i]?.clear();
+          continue;
+        }
+
+        final barrage = barrageControllerFor(i);
+        final session = _cellDanmakuSessions.putIfAbsent(i, () {
+          return MultiviewDanmakuSession(
+            engineFactory: _danmakuEngineFactory,
+            onChatMessage: (message) {
+              barrage.send(
+                BarrageItem(
+                  content: message.message,
+                  userId: message.userId,
+                  userName: message.userName,
+                  textColor: Color.fromARGB(255, message.color.r, message.color.g, message.color.b),
+                ),
+              );
+            },
+          );
+        });
+
+        final ready = await _danmakuReadyRoom(room);
+        if (token != _danmakuSyncEpoch) return;
+        if (MultiviewDanmakuSession.supportsRoom(ready)) {
+          unawaited(session.connect(ready));
+        }
       }
-      _retargetDanmakuLayer(ready.identityKey);
-      await _danmakuSession.connect(ready);
-      if (token == _danmakuSyncEpoch && !_danmakuSession.isConnected) {
-        _scheduleDanmakuResync(token);
-        return;
-      }
-      _danmakuResyncAttempts = 0;
     } catch (error, stackTrace) {
       developer.log(
-        'MultiviewController: danmaku session sync failed',
+        'MultiviewController: all danmaku sessions sync failed',
         name: 'MultiviewController',
         error: error,
         stackTrace: stackTrace,
       );
-      _scheduleDanmakuResync(token);
     }
   }
 
@@ -616,6 +647,9 @@ class MultiviewController extends GetxController {
     _cancelDiscovery(cellIndex);
     _sourceContexts.remove(cellIndex);
     _volumes.remove(cellIndex);
+    final removedSession = _cellDanmakuSessions.remove(cellIndex);
+    unawaited(removedSession?.disconnect());
+    _cellBarrageControllers[cellIndex]?.clear();
     if (_audioFocusIndex.value == cellIndex) {
       _refocusToFirstPlaying(fallback: cellIndex);
     }
@@ -1001,6 +1035,11 @@ class MultiviewController extends GetxController {
       _retireDiscovery(scope);
     }
     _discoveryScopes.clear();
+    for (final s in _cellDanmakuSessions.values) {
+      unawaited(s.disconnect());
+    }
+    _cellDanmakuSessions.clear();
+    _cellBarrageControllers.clear();
     unawaited(_danmakuSession.disconnect());
     super.onClose();
   }
